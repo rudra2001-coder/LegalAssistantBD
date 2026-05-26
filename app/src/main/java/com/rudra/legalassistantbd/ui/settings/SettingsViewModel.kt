@@ -44,9 +44,9 @@ class SettingsViewModel @Inject constructor(
 
     private fun loadStats() {
         viewModelScope.launch {
-            val lawCount = lawDao.getCount()
-            val sectionCount = lawSectionDao.getCount()
-            val caseCount = caseDao.getCount()
+            val lawCount = lawDao.getCount().first()
+            val sectionCount = lawSectionDao.getCount().first()
+            val caseCount = caseDao.getCount().first()
             val reminderCount = reminderDao.getAllReminders().first().size
             _state.update {
                 it.copy(

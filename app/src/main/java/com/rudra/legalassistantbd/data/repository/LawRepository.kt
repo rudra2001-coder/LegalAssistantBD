@@ -30,8 +30,8 @@ class LawRepository @Inject constructor(
     suspend fun insertLaws(laws: List<LawEntity>) = lawDao.insertAll(laws)
     suspend fun insertSections(sections: List<LawSectionEntity>) = sectionDao.insertAll(sections)
     suspend fun insertSection(section: LawSectionEntity) = sectionDao.insert(section)
-    suspend fun getLawCount(): Int = lawDao.getCount()
-    suspend fun getSectionCount(): Int = sectionDao.getCount()
+    fun getLawCount(): Flow<Int> = lawDao.getCount()
+    fun getSectionCount(): Flow<Int> = sectionDao.getCount()
     suspend fun deleteCustomSection(id: Int) = sectionDao.deleteCustomSection(id)
 
     fun getCustomSections(): Flow<List<LawSectionEntity>> = sectionDao.getCustomSections()

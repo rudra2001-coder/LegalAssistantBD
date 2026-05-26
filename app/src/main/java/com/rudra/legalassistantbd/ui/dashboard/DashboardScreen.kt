@@ -97,7 +97,7 @@ fun DashboardScreen(
 
                 Spacer(Modifier.height(14.dp))
 
-                RecentActivityList()
+                RecentActivityList(items = state.recentItems)
 
                 Spacer(Modifier.height(20.dp))
 
@@ -536,21 +536,8 @@ private fun SmallActionCard(item: ActionItem, modifier: Modifier, onClick: () ->
 }
 
 // ── Recent Activity ───────────────────────────────────────────────────────────
-private data class RecentItem(
-    val title: String,
-    val subtitle: String,
-    val dotColor: Color,
-    val badgeLabel: String
-)
-
-private val sampleRecentItems = listOf(
-    RecentItem("Penal Code — Section 302", "Viewed 2 hours ago", Green, "LAW"),
-    RecentItem("Case #041 — Rahman v. State", "Updated 5 hours ago", Blue, "CASE"),
-    RecentItem("Court Date Reminder — Jun 3", "Set yesterday", Orange, "ALERT")
-)
-
 @Composable
-private fun RecentActivityList() {
+private fun RecentActivityList(items: List<RecentItem>) {
     val scheme = MaterialTheme.colorScheme
     val c = LocalAppColors.current
     Column(
@@ -559,8 +546,17 @@ private fun RecentActivityList() {
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        sampleRecentItems.forEach { item ->
-            RecentItemRow(item = item)
+        if (items.isEmpty()) {
+            Text(
+                text = "No recent activity",
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        } else {
+            items.forEach { item ->
+                RecentItemRow(item = item)
+            }
         }
     }
 }

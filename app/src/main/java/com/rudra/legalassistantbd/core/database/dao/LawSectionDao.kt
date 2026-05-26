@@ -58,5 +58,5 @@ interface LawSectionDao {
     suspend fun searchBySectionNumbers(numbers: List<String>, lawId: Int): List<LawSectionEntity>
 
     @Query("SELECT COUNT(*) FROM law_sections")
-    suspend fun getCount(): Int
+    fun getCount(): Flow<Int>
 }

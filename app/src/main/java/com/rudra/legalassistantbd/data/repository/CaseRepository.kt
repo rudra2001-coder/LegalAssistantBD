@@ -27,8 +27,8 @@ class CaseRepository @Inject constructor(
     suspend fun updateCaseStatus(id: Int, status: String) = caseDao.updateStatus(id, status)
     suspend fun updateNextHearing(id: Int, hearingDate: Long) = caseDao.updateNextHearing(id, hearingDate)
     suspend fun deleteCase(id: Int) = caseDao.delete(id)
-    suspend fun getCaseCount(): Int = caseDao.getCount()
-    suspend fun getCaseCountByStatus(status: String): Int = caseDao.getCountByStatus(status)
+    fun getCaseCount(): Flow<Int> = caseDao.getCount()
+    fun getCaseCountByStatus(status: String): Flow<Int> = caseDao.getCountByStatus(status)
 
     fun getAllClients(): Flow<List<ClientEntity>> = clientDao.getAllClients()
     suspend fun getClientById(id: Int): ClientEntity? = clientDao.getClientById(id)

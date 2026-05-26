@@ -40,8 +40,8 @@ interface CaseDao {
     suspend fun deleteAll()
 
     @Query("SELECT COUNT(*) FROM cases")
-    suspend fun getCount(): Int
+    fun getCount(): Flow<Int>
 
     @Query("SELECT COUNT(*) FROM cases WHERE status = :status")
-    suspend fun getCountByStatus(status: String): Int
+    fun getCountByStatus(status: String): Flow<Int>
 }
