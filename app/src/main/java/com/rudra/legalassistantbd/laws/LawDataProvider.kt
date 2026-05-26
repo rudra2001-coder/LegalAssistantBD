@@ -47,7 +47,7 @@ object LawDataProvider {
             ProcedureEntity(3, 102, 3, "Arrest / Summons", "গ্রেপ্তার / সমন", "Based on evidence, police may arrest the accused or issue summons.", "Warrant/Summons", "1-7 days", null),
             ProcedureEntity(4, 102, 4, "Charge Sheet", "চার্জশিট দাখিল", "Police submits charge sheet to the Magistrate Court if sufficient evidence found.", "Charge sheet, evidence list", "7-30 days", "Magistrate Court"),
             ProcedureEntity(5, 102, 5, "Trial", "বিচার", "Magistrate Court conducts trial. Accused can apply for bail as it is a bailable offence.", "Case file, witnesses", "30-180 days", "Magistrate Court"),
-            ProcedureEntity(6, 102, 6, "Judgment", "রায়", "Court delivers judgment. If found guilty, punishment as per Section 379.", null, null, "Magistrate Court"),
+            ProcedureEntity(6, 102, 6, "Judgment", "রায়", "Court delivers judgment. If found guilty, punishment as per Section 379.", "আদালত রায় প্রদান করে। দোষী সাব্যস্ত হলে ধারা ৩৭৯ অনুযায়ী শাস্তি নির্ধারিত হয়।", null, null, "Magistrate Court"),
 
             // Procedure for Section 302 (Murder)
             ProcedureEntity(7, 101, 1, "File FIR", "এফআইআর দায়ের", "Immediately go to the nearest police station and file FIR.", "NID card, incident details", "Same day", "Police Station"),
@@ -55,7 +55,7 @@ object LawDataProvider {
             ProcedureEntity(9, 101, 3, "Arrest", "গ্রেপ্তার", "Accused is arrested. Bail is not applicable as it is a non-bailable offence.", "Arrest warrant", "Immediate", null),
             ProcedureEntity(10, 101, 4, "Charge Sheet", "চার্জশিট", "Police submits charge sheet to Sessions Court.", "Charge sheet, forensic reports", "30-90 days", "Sessions Court"),
             ProcedureEntity(11, 101, 5, "Trial in Sessions Court", "সেশনস আদালতে বিচার", "Trial conducted in Sessions Court. Includes examination of witnesses and arguments.", "Case file, witnesses, exhibits", "90-365 days", "Sessions Court"),
-            ProcedureEntity(12, 101, 6, "Judgment", "রায়", "Court delivers judgment. Conviction can lead to death sentence or life imprisonment.", null, null, "Sessions Court"),
+            ProcedureEntity(12, 101, 6, "Judgment", "রায়", "Court delivers judgment. Conviction can lead to death sentence or life imprisonment.", "আদালত রায় প্রদান করে। দোষী সাব্যস্ত হলে মৃত্যুদণ্ড বা যাবজ্জীবন কারাদণ্ড হতে পারে।", null, null, "Sessions Court"),
 
             // Procedure for Section 420 (Cheating)
             ProcedureEntity(13, 105, 1, "File Complaint/FIR", "অভিযোগ/এফআইআর দায়ের", "File a complaint or FIR at the police station or directly before the Magistrate.", "Complaint, evidence of cheating", "1-3 days", "Police/Magistrate Court"),

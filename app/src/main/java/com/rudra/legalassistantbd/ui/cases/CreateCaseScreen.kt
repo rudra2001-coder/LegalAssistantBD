@@ -15,17 +15,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.database.entity.LawSectionEntity
-import com.rudra.legalassistantbd.core.util.Constants.*
+import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateCaseScreen(
     navController: NavController,
     viewModel: CaseViewModel = hiltViewModel()
 ) {
     var title by remember { mutableStateOf("") }
-    var caseType by remember { mutableStateOf(CASE_TYPE_CRIMINAL) }
+    var caseType by remember { mutableStateOf(Constants.CASE_TYPE_CRIMINAL) }
     var description by remember { mutableStateOf("") }
     var opponentName by remember { mutableStateOf("") }
     var courtName by remember { mutableStateOf("") }
@@ -33,7 +34,7 @@ fun CreateCaseScreen(
     var expandedSectionMenu by remember { mutableStateOf(false) }
     var selectedSectionId by remember { mutableStateOf<Int?>(null) }
     var selectedSectionTitle by remember { mutableStateOf("None") }
-    val types = listOf(CASE_TYPE_CRIMINAL, CASE_TYPE_CIVIL, CASE_TYPE_FAMILY, CASE_TYPE_LABOUR, CASE_TYPE_OTHER)
+    val types = listOf(Constants.CASE_TYPE_CRIMINAL, Constants.CASE_TYPE_CIVIL, Constants.CASE_TYPE_FAMILY, Constants.CASE_TYPE_LABOUR, Constants.CASE_TYPE_OTHER)
     val sections by viewModel.allSections.collectAsState()
 
     Scaffold(
@@ -264,13 +265,4 @@ fun CreateCaseScreen(
     }
 }
 
-@Composable
-fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = WhiteSoft,
-    unfocusedTextColor = WhiteSoft,
-    focusedBorderColor = Gold,
-    unfocusedBorderColor = DarkSurfaceVariant,
-    cursorColor = Gold,
-    focusedLabelColor = Gold,
-    unfocusedLabelColor = GrayLight
-)
+

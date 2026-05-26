@@ -52,6 +52,43 @@ class PdfTextExtractor @Inject constructor(
         }
         return pages
     }
+
+    fun extractTextWithProgress(uri: Uri, onProgress: (Int, Int) -> Unit): String? {
+        return try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                PDDocument.load(inputStream).use { document ->
+                    val totalPages = document.numberOfPages
+                    val fullText = StringBuilder()
+                    val stripper = PDFTextStripper()
+                    stripper.sortByPosition = true
+                    for (i in 0 until totalPages) {
+                        stripper.startPage = i + 1
+                        stripper.endPage = i + 1
+                        fullText.append(stripper.getText(document))
+                        fullText.append("\n")
+                        onProgress(i + 1, totalPages)
+                    }
+                    fullText.toString()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    fun getPageCount(uri: Uri): Int {
+        return try {
+            context.contentResolver.openInputStream(uri)?.use { inputStream ->
+                PDDocument.load(inputStream).use { document ->
+                    document.numberOfPages
+                }
+            } ?: 0
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
+    }
 }
 
 data class LawPageContent(

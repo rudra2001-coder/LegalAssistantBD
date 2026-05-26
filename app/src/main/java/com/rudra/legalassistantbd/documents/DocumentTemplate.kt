@@ -20,34 +20,34 @@ FIR (First Information Report) Draft
 
 To,
 The Officer-in-Charge,
-${"${policeStation}"} Police Station
-District: ${"${district}"}
+${'$'}{policeStation} Police Station
+District: ${'$'}{district}
 
-Subject: First Information Report regarding ${"${incident}"}
+Subject: First Information Report regarding ${'$'}{incident}
 
 Sir/Madam,
 
-I, ${"${complainantName}"}, son/daughter of ${"${fatherName}"}, residing at ${"${address}"}, do hereby lodge this First Information Report.
+I, ${'$'}{complainantName}, son/daughter of ${'$'}{fatherName}, residing at ${'$'}{address}, do hereby lodge this First Information Report.
 
-1. Date and Time of Incident: ${"${incidentDate}"} at ${"${incidentTime}"}
-2. Location of Incident: ${"${incidentLocation}"}
-3. Description of Incident: ${"${incidentDescription}"}
+1. Date and Time of Incident: ${'$'}{incidentDate} at ${'$'}{incidentTime}
+2. Location of Incident: ${'$'}{incidentLocation}
+3. Description of Incident: ${'$'}{incidentDescription}
 
 4. Accused Person(s):
-   ${"${accusedDetails}"}
+   ${'$'}{accusedDetails}
 
 5. Witnesses:
-   ${"${witnesses}"}
+   ${'$'}{witnesses}
 
-6. Property Loss/Damage: ${"${propertyLoss}"}
+6. Property Loss/Damage: ${'$'}{propertyLoss}
 
 Therefore, I pray that necessary legal action be taken against the accused person(s) as per law.
 
 Sincerely,
 
-${"${complainantName}"}
+${'$'}{complainantName}
 Signature: _______________
-Date: ${"${currentDate}"}
+Date: ${'$'}{currentDate}
             """.trimIndent(),
             placeholders = listOf("policeStation", "district", "incident", "complainantName", "fatherName", "address", "incidentDate", "incidentTime", "incidentLocation", "incidentDescription", "accusedDetails", "witnesses", "propertyLoss", "currentDate")
         ),
@@ -59,36 +59,36 @@ Date: ${"${currentDate}"}
 LEGAL NOTICE
 =============
 
-Date: ${"${currentDate}"}
+Date: ${'$'}{currentDate}
 
 To,
-${"${recipientName}"}
-${"${recipientAddress}"}
+${'$'}{recipientName}
+${'$'}{recipientAddress}
 
 From,
-${"${senderName}"}
-${"${senderAddress}"}
+${'$'}{senderName}
+${'$'}{senderAddress}
 
-Subject: Legal Notice regarding ${"${subject}"}
+Subject: Legal Notice regarding ${'$'}{subject}
 
 Dear Sir/Madam,
 
-We are writing on behalf of our client, ${"${senderName}"}, to serve you with the following legal notice:
+We are writing on behalf of our client, ${'$'}{senderName}, to serve you with the following legal notice:
 
-1. ${"${noticeContent}"}
+1. ${'$'}{noticeContent}
 
 2. Our client has instructed us to demand that you:
-   ${"${demand}"}
+   ${'$'}{demand}
 
-3. If you fail to comply with the above demand within ${"${deadlineDays}"} days from the receipt of this notice, our client shall be constrained to initiate appropriate legal proceedings against you, and you shall be held liable for all costs and consequences thereof.
+3. If you fail to comply with the above demand within ${'$'}{deadlineDays} days from the receipt of this notice, our client shall be constrained to initiate appropriate legal proceedings against you, and you shall be held liable for all costs and consequences thereof.
 
 This notice is being sent without prejudice to our client's rights and contentions.
 
 Sincerely,
 
-${"${lawyerName}"}
+${'$'}{lawyerName}
 Advocate
-${"${lawFirm}"}
+${'$'}{lawFirm}
             """.trimIndent(),
             placeholders = listOf("currentDate", "recipientName", "recipientAddress", "senderName", "senderAddress", "subject", "noticeContent", "demand", "deadlineDays", "lawyerName", "lawFirm")
         ),
@@ -100,19 +100,19 @@ ${"${lawFirm}"}
 AFFIDAVIT
 ==========
 
-I, ${"${deponentName}"}, son/daughter of ${"${fatherName}"}, aged about ${"${age}"} years, by faith ${"${religion}"}, by nationality Bangladeshi, by occupation ${"${occupation}"}, residing at ${"${address}"}, do hereby solemnly affirm and declare as follows:
+I, ${'$'}{deponentName}, son/daughter of ${'$'}{fatherName}, aged about ${'$'}{age} years, by faith ${'$'}{religion}, by nationality Bangladeshi, by occupation ${'$'}{occupation}, residing at ${'$'}{address}, do hereby solemnly affirm and declare as follows:
 
-1. ${"${declaration1}"}
+1. ${'$'}{declaration1}
 
-2. ${"${declaration2}"}
+2. ${'$'}{declaration2}
 
-3. ${"${declaration3}"}
+3. ${'$'}{declaration3}
 
 4. I make this affidavit knowing the contents thereof to be true and correct.
 
 Deponent
 
-Verified and signed before me on this ${"${currentDate}"}.
+Verified and signed before me on this ${'$'}{currentDate}.
 
 Commissioner of Oaths / Notary Public
             """.trimIndent(),
@@ -126,23 +126,23 @@ Commissioner of Oaths / Notary Public
 BAIL PETITION
 =============
 
-IN THE COURT OF ${"${courtName}"}
-CASE NO: ${"${caseNumber}"}
+IN THE COURT OF ${'$'}{courtName}
+CASE NO: ${'$'}{caseNumber}
 
 IN THE MATTER OF:
-${"${applyingPerson}"} ------------------------------------------- Petitioner
+${'$'}{applyingPerson} ------------------------------------------- Petitioner
 Vs.
 The State ------------------------------------------------------- Opposite Party
 
-PETITION FOR BAIL UNDER SECTION ${"${bailSection}"} OF THE CODE OF CRIMINAL PROCEDURE, 1898
+PETITION FOR BAIL UNDER SECTION ${'$'}{bailSection} OF THE CODE OF CRIMINAL PROCEDURE, 1898
 
 Most Respectfully Sheweth:
 
-1. That the petitioner is ${"${relationship}"} of the accused ${"${accusedName}"}, who has been arrested in connection with the above-mentioned case.
+1. That the petitioner is ${'$'}{relationship} of the accused ${'$'}{accusedName}, who has been arrested in connection with the above-mentioned case.
 
 2. That the accused has been falsely implicated in the said case and has not committed any offence as alleged.
 
-3. That the accused is a permanent resident of ${"${address}"} and has no previous criminal record.
+3. That the accused is a permanent resident of ${'$'}{address} and has no previous criminal record.
 
 4. That the accused undertakes to abide by any terms and conditions that this Hon'ble Court may impose.
 

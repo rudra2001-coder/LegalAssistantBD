@@ -18,7 +18,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.rudra.legalassistantbd.core.util.Constants.*
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
 
@@ -127,16 +129,16 @@ data class QuickAction(
 )
 
 private val quickActions = listOf(
-    QuickAction("Law Library", Icons.Outlined.LibraryBooks, ROUTE_LAW_EXPLORER, Gold),
-    QuickAction("Search", Icons.Outlined.Search, ROUTE_SEARCH, InfoBlue),
-    QuickAction("Cases", Icons.Outlined.Gavel, ROUTE_CASES, SuccessGreen),
-    QuickAction("Custom Sections", Icons.Outlined.NoteAdd, ROUTE_CUSTOM_SECTION, Gold),
-    QuickAction("AI Assistant", Icons.Outlined.SmartToy, ROUTE_AI_CHAT, Gold),
-    QuickAction("Documents", Icons.Outlined.Description, ROUTE_DOCUMENTS, WarningOrange),
-    QuickAction("Reminders", Icons.Outlined.Notifications, ROUTE_REMINDERS, ErrorRed),
-    QuickAction("Procedures", Icons.Outlined.AccountTree, ROUTE_PROCEDURES.replace("/{sectionId}", "/0"), InfoBlue),
-    QuickAction("PDF Import", Icons.Outlined.PictureAsPdf, ROUTE_PDF_CONVERTER, ErrorRed),
-    QuickAction("Security", Icons.Outlined.Lock, ROUTE_SECURITY, GoldLight)
+    QuickAction("Law Library", Icons.Outlined.LibraryBooks, Constants.ROUTE_LAW_EXPLORER, Gold),
+    QuickAction("Search", Icons.Outlined.Search, Constants.ROUTE_SEARCH, InfoBlue),
+    QuickAction("Cases", Icons.Outlined.Gavel, Constants.ROUTE_CASES, SuccessGreen),
+    QuickAction("Custom Sections", Icons.Outlined.NoteAdd, Constants.ROUTE_CUSTOM_SECTION, Gold),
+    QuickAction("AI Assistant", Icons.Outlined.SmartToy, Constants.ROUTE_AI_CHAT, Gold),
+    QuickAction("Documents", Icons.Outlined.Description, Constants.ROUTE_DOCUMENTS, WarningOrange),
+    QuickAction("Reminders", Icons.Outlined.Notifications, Constants.ROUTE_REMINDERS, ErrorRed),
+    QuickAction("Procedures", Icons.Outlined.AccountTree, Constants.ROUTE_PROCEDURES.replace("/{sectionId}", "/0"), InfoBlue),
+    QuickAction("PDF Import", Icons.Outlined.PictureAsPdf, Constants.ROUTE_PDF_CONVERTER, ErrorRed),
+    QuickAction("Security", Icons.Outlined.Lock, Constants.ROUTE_SECURITY, GoldLight)
 )
 
 @Composable

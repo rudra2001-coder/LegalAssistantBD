@@ -231,3 +231,36 @@ fun LoadingIndicator(modifier: Modifier = Modifier) {
         CircularProgressIndicator(color = Gold)
     }
 }
+
+@Composable
+fun DetailRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = GrayLight
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium,
+            color = WhiteSoft,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
+fun fieldColors() = OutlinedTextFieldDefaults.colors(
+    focusedTextColor = WhiteSoft,
+    unfocusedTextColor = WhiteSoft,
+    focusedBorderColor = Gold,
+    unfocusedBorderColor = DarkSurfaceVariant,
+    cursorColor = Gold,
+    focusedLabelColor = Gold,
+    unfocusedLabelColor = GrayLight
+)

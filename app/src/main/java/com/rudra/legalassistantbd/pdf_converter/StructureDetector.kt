@@ -6,61 +6,69 @@ import javax.inject.Singleton
 @Singleton
 class StructureDetector @Inject constructor() {
 
-    private val sectionPattern = Regex(
-        """(?:Section|ধারা|সেকশন)\s*[#:.．\s]*(\d+[A-Za-z]?)\s*[:\-–—]?\s*(.*?)(?=(?:Section|ধারা|সেকশन|\n\n|$))""",
-        setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)
-    )
-
-    private val titlePattern = Regex(
-        """(?:Title|শিরোনাম|Heading|হেডিং)\s*[:\-–—]?\s*(.+)""",
-        RegexOption.IGNORE_CASE
+    private val patterns = listOf(
+        Regex("""(?:Section|ধারা|সেকশন)\s*[#:.．\s]*(\d+[A-Za-z]?)\s*[:\-–—]?\s*(.*?)(?=(?:Section|ধারা|সেকশন|\n\n|$))""", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL)),
+        Regex("""(?:ধারা|Section)\s+(\d+[A-Za-z]?)""", RegexOption.IGNORE_CASE),
+        Regex("""^(\d+[A-Za-z]?)\.\s+(.*)""", RegexOption.MULTILINE),
+        Regex("""^(\d+[A-Za-z]?)[)．]\s*(.*)""", RegexOption.MULTILINE),
+        Regex("""CHAPTER\s+(\d+[A-Za-z]?)\s*[:\-–—]?\s*(.*?)(?=(?:CHAPTER|\n\n|$))""", setOf(RegexOption.IGNORE_CASE, RegexOption.DOT_MATCHES_ALL))
     )
 
     fun detectSections(text: String): List<ParsedSection> {
         val sections = mutableListOf<ParsedSection>()
-        var currentSection: ParsedSection? = null
         val lines = text.lines()
+        var currentSection: ParsedSection? = null
+        var buffer = StringBuilder()
 
         for (line in lines) {
             val trimmed = line.trim()
             if (trimmed.isBlank()) continue
 
-            val sectionMatch = Regex(
-                """(?:Section|ধারা)\s+(\d+[A-Za-z]?)""",
-                RegexOption.IGNORE_CASE
-            ).find(trimmed)
+            val sectionMatch = findSectionStart(trimmed)
 
             if (sectionMatch != null) {
-                currentSection?.let { sections.add(it) }
+                if (currentSection != null) {
+                    sections.add(currentSection!!.copy(content = currentSection!!.content.trim()))
+                }
                 currentSection = ParsedSection(
-                    sectionNumber = sectionMatch.groupValues[1],
-                    title = "",
+                    sectionNumber = sectionMatch.first,
+                    title = sectionMatch.second,
                     content = ""
                 )
-                val afterSection = trimmed.substring(sectionMatch.range.last + 1).trim()
-                if (afterSection.isNotEmpty()) {
-                    if (currentSection!!.title.isEmpty()) {
-                        currentSection = currentSection!!.copy(title = afterSection)
-                    } else {
-                        currentSection = currentSection!!.copy(
-                            content = currentSection!!.content + "\n" + afterSection
-                        )
-                    }
-                }
+                buffer = StringBuilder()
             } else {
                 if (currentSection != null) {
-                    if (currentSection!!.title.isEmpty() && !trimmed.startsWith("(")) {
+                    if (currentSection!!.title.isEmpty() && !trimmed.startsWith("(") && !trimmed.startsWith("[")) {
                         currentSection = currentSection!!.copy(title = trimmed)
                     } else {
-                        currentSection = currentSection!!.copy(
-                            content = currentSection!!.content + "\n" + trimmed
-                        )
+                        if (buffer.isNotEmpty()) buffer.append("\n")
+                        buffer.append(trimmed)
                     }
                 }
             }
         }
-        currentSection?.let { sections.add(it) }
+
+        if (currentSection != null) {
+            sections.add(currentSection!!.copy(content = buffer.toString().trim()))
+        }
+
         return sections
+    }
+
+    private fun findSectionStart(line: String): Pair<String, String>? {
+        for (pattern in patterns) {
+            val match = pattern.find(line)
+            if (match != null) {
+                if (match.groupValues.size >= 3) {
+                    val title = match.groupValues[2].trim().take(100)
+                    return Pair(match.groupValues[1], title)
+                }
+                if (match.groupValues.size >= 2) {
+                    return Pair(match.groupValues[1], "")
+                }
+            }
+        }
+        return null
     }
 
     fun extractKeywords(section: ParsedSection): List<String> {
@@ -73,7 +81,8 @@ class StructureDetector @Inject constructor() {
         words
             .map { it.replace(Regex("[^a-zA-Zবাংলা]"), "").lowercase() }
             .filter { it.length > 3 && it !in stopWords }
-            .take(10)
+            .distinct()
+            .take(15)
             .let { keywords.addAll(it) }
 
         return keywords.toList()

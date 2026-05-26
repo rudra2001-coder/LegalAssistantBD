@@ -160,6 +160,7 @@ fun ReminderCard(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddReminderDialog(
     onDismiss: () -> Unit,

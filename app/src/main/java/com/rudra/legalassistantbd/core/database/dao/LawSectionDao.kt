@@ -54,6 +54,9 @@ interface LawSectionDao {
     @Query("DELETE FROM law_sections WHERE isCustom = 1 AND id = :id")
     suspend fun deleteCustomSection(id: Int)
 
+    @Query("SELECT * FROM law_sections WHERE sectionNumber IN (:numbers) AND lawId = :lawId ORDER BY orderIndex")
+    suspend fun searchBySectionNumbers(numbers: List<String>, lawId: Int): List<LawSectionEntity>
+
     @Query("SELECT COUNT(*) FROM law_sections")
     suspend fun getCount(): Int
 }

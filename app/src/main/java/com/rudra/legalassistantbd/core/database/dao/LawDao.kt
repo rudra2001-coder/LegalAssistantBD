@@ -29,4 +29,7 @@ interface LawDao {
 
     @Query("SELECT COUNT(*) FROM laws")
     suspend fun getCount(): Int
+
+    @Query("SELECT id FROM laws ORDER BY id DESC LIMIT 1")
+    suspend fun getLatestLawId(): Int?
 }

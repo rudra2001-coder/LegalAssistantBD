@@ -32,6 +32,7 @@ object Constants {
     const val AI_MODE_ONLINE = "online"
 
     // Navigation Routes
+    const val ROUTE_ONBOARDING = "onboarding"
     const val ROUTE_DASHBOARD = "dashboard"
     const val ROUTE_LAW_EXPLORER = "law_explorer"
     const val ROUTE_LAW_DETAIL = "law_detail/{lawId}"
@@ -48,4 +49,10 @@ object Constants {
     const val ROUTE_SECURITY = "security"
     const val ROUTE_CUSTOM_SECTION = "custom_section"
     const val ROUTE_PROCEDURE_GUIDANCE = "procedure_guidance/{caseId}"
+
+    const val ROUTE_LAW_DETAIL_WITH_LAW_ID = "law_detail"
+    const val ROUTE_SECTION_DETAIL_WITH_SECTION_ID = "section_detail"
+    const val ROUTE_CASE_DETAIL_WITH_CASE_ID = "case_detail"
+    const val ROUTE_PROCEDURES_WITH_SECTION_ID = "procedures"
+    const val ROUTE_PROCEDURE_GUIDANCE_WITH_CASE_ID = "procedure_guidance"
 }

@@ -18,9 +18,10 @@ import com.rudra.legalassistantbd.core.database.entity.*
         ClientEntity::class,
         EvidenceEntity::class,
         ReminderEntity::class,
-        CaseProcedureProgressEntity::class
+        CaseProcedureProgressEntity::class,
+        PdfImportEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class LegalDatabase : RoomDatabase() {
@@ -32,6 +33,7 @@ abstract class LegalDatabase : RoomDatabase() {
     abstract fun reminderDao(): ReminderDao
     abstract fun evidenceDao(): EvidenceDao
     abstract fun caseProcedureProgressDao(): CaseProcedureProgressDao
+    abstract fun pdfImportDao(): PdfImportDao
 
     companion object {
         const val DATABASE_NAME = "legal_assistant_bd.db"
@@ -53,6 +55,19 @@ abstract class LegalDatabase : RoomDatabase() {
             """)
             db.execSQL("CREATE INDEX IF NOT EXISTS idx_case_procedure_progress_caseId ON case_procedure_progress(caseId)")
             db.execSQL("CREATE INDEX IF NOT EXISTS idx_case_procedure_progress_procedureId ON case_procedure_progress(procedureId)")
+        }
+
+        val MIGRATION_2_3 = Migration(2, 3) { db ->
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS pdf_imports (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    file_name TEXT NOT NULL,
+                    law_id INTEGER NOT NULL,
+                    sections_count INTEGER NOT NULL DEFAULT 0,
+                    imported_at INTEGER NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'completed'
+                )
+            """)
         }
     }
 }

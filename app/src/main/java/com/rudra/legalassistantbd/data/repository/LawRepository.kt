@@ -2,9 +2,11 @@ package com.rudra.legalassistantbd.data.repository
 
 import com.rudra.legalassistantbd.core.database.dao.LawDao
 import com.rudra.legalassistantbd.core.database.dao.LawSectionDao
+import com.rudra.legalassistantbd.core.database.dao.PdfImportDao
 import com.rudra.legalassistantbd.core.database.dao.ProcedureDao
 import com.rudra.legalassistantbd.core.database.entity.LawEntity
 import com.rudra.legalassistantbd.core.database.entity.LawSectionEntity
+import com.rudra.legalassistantbd.core.database.entity.PdfImportEntity
 import com.rudra.legalassistantbd.core.database.entity.ProcedureEntity
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -14,7 +16,8 @@ import javax.inject.Singleton
 class LawRepository @Inject constructor(
     private val lawDao: LawDao,
     private val sectionDao: LawSectionDao,
-    private val procedureDao: ProcedureDao
+    private val procedureDao: ProcedureDao,
+    private val pdfImportDao: PdfImportDao
 ) {
     fun getAllLaws(): Flow<List<LawEntity>> = lawDao.getAllLaws()
     suspend fun getLawById(id: Int): LawEntity? = lawDao.getLawById(id)
@@ -40,4 +43,17 @@ class LawRepository @Inject constructor(
     suspend fun insertProcedure(procedure: ProcedureEntity) = procedureDao.insert(procedure)
     suspend fun deleteProceduresForSection(sectionId: Int) = procedureDao.deleteProceduresForSection(sectionId)
     suspend fun deleteProcedure(id: Int) = procedureDao.deleteById(id)
+
+    suspend fun searchBySectionNumbers(numbers: List<String>, lawId: Int): List<LawSectionEntity> =
+        sectionDao.searchBySectionNumbers(numbers, lawId)
+
+    suspend fun insertProcedures(procedures: List<ProcedureEntity>) = procedureDao.insertAll(procedures)
+
+    suspend fun getProceduresBySectionIds(sectionIds: List<Int>): List<ProcedureEntity> =
+        procedureDao.getProceduresBySectionIds(sectionIds)
+
+    suspend fun getLatestLawId(): Int? = lawDao.getLatestLawId()
+
+    fun getAllImports(): Flow<List<PdfImportEntity>> = pdfImportDao.getAllImports()
+    suspend fun insertImport(import: PdfImportEntity) = pdfImportDao.insert(import)
 }

@@ -5,12 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.rudra.legalassistantbd.core.database.DataInitializer
+import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.navigation.NavGraph
+import com.rudra.legalassistantbd.ui.onboarding.isOnboardingComplete
 import com.rudra.legalassistantbd.ui.theme.LegalAssistantBDTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -32,11 +34,21 @@ class MainActivity : ComponentActivity() {
             dataInitializer.initializeIfNeeded()
         }
 
+        val onboardingComplete = isOnboardingComplete(this)
+        val startDestination = if (onboardingComplete) {
+            Constants.ROUTE_DASHBOARD
+        } else {
+            Constants.ROUTE_ONBOARDING
+        }
+
         setContent {
             LegalAssistantBDTheme {
                 val navController = rememberNavController()
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    NavGraph(navController = navController)
+                    NavGraph(
+                        navController = navController,
+                        startDestination = startDestination
+                    )
                 }
             }
         }

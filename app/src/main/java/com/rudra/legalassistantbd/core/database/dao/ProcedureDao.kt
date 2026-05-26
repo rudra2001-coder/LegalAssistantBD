@@ -27,6 +27,9 @@ interface ProcedureDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(procedure: ProcedureEntity): Long
 
+    @Query("SELECT * FROM procedures WHERE sectionId IN (:sectionIds) ORDER BY sectionId, stepNumber")
+    suspend fun getProceduresBySectionIds(sectionIds: List<Int>): List<ProcedureEntity>
+
     @Query("DELETE FROM procedures WHERE sectionId = :sectionId")
     suspend fun deleteProceduresForSection(sectionId: Int)
 
