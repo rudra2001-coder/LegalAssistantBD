@@ -48,6 +48,8 @@ object Constants {
     const val ROUTE_PDF_CONVERTER = "pdf_converter"
     const val ROUTE_SECURITY = "security"
     const val ROUTE_CUSTOM_SECTION = "custom_section"
+    const val ROUTE_ALL_FEATURES = "all_features"
+    const val ROUTE_SETTINGS = "settings"
     const val ROUTE_PROCEDURE_GUIDANCE = "procedure_guidance/{caseId}"
 
     const val ROUTE_LAW_DETAIL_WITH_LAW_ID = "law_detail"

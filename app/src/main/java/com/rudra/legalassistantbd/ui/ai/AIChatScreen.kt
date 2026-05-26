@@ -156,13 +156,7 @@ fun AIChatScreen(
                         placeholder = { Text("Ask a legal question...", color = GrayMedium) },
                         singleLine = true,
                         shape = RoundedCornerShape(24.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = WhiteSoft,
-                            unfocusedTextColor = WhiteSoft,
-                            focusedBorderColor = Gold,
-                            unfocusedBorderColor = DarkSurfaceVariant,
-                            cursorColor = Gold
-                        )
+                        colors = fieldColors()
                     )
                     Spacer(Modifier.width(8.dp))
                     FilledIconButton(

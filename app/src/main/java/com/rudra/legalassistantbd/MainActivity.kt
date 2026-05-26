@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.rudra.legalassistantbd.core.database.DataInitializer
 import com.rudra.legalassistantbd.core.util.Constants
+import com.rudra.legalassistantbd.ui.navigation.BottomNavBar
 import com.rudra.legalassistantbd.ui.navigation.NavGraph
 import com.rudra.legalassistantbd.ui.onboarding.isOnboardingComplete
 import com.rudra.legalassistantbd.ui.theme.LegalAssistantBDTheme
@@ -44,7 +45,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             LegalAssistantBDTheme {
                 val navController = rememberNavController()
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = { BottomNavBar(navController = navController) }
+                ) { innerPadding ->
                     NavGraph(
                         navController = navController,
                         startDestination = startDestination

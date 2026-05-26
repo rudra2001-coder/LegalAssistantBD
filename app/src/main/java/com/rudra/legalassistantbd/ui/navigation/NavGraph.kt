@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.ai.AIChatScreen
+import com.rudra.legalassistantbd.ui.allfeatures.AllFeaturesScreen
 import com.rudra.legalassistantbd.ui.cases.CaseDetailScreen
 import com.rudra.legalassistantbd.ui.cases.CaseListScreen
 import com.rudra.legalassistantbd.ui.cases.CreateCaseScreen
@@ -23,6 +24,7 @@ import com.rudra.legalassistantbd.ui.procedures.ProcedureScreen
 import com.rudra.legalassistantbd.ui.reminders.ReminderScreen
 import com.rudra.legalassistantbd.ui.search.SearchScreen
 import com.rudra.legalassistantbd.ui.security.SecurityScreen
+import com.rudra.legalassistantbd.ui.settings.SettingsScreen
 
 @Composable
 fun NavGraph(
@@ -102,6 +104,12 @@ fun NavGraph(
         }
         composable(Constants.ROUTE_CUSTOM_SECTION) {
             CustomSectionScreen(navController = navController)
+        }
+        composable(Constants.ROUTE_ALL_FEATURES) {
+            AllFeaturesScreen(navController = navController)
+        }
+        composable(Constants.ROUTE_SETTINGS) {
+            SettingsScreen(navController = navController)
         }
     }
 }

@@ -170,15 +170,7 @@ fun DocumentGeneratorScreen(
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
                         shape = RoundedCornerShape(12.dp),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedTextColor = WhiteSoft,
-                            unfocusedTextColor = WhiteSoft,
-                            focusedBorderColor = Gold,
-                            unfocusedBorderColor = DarkSurfaceVariant,
-                            cursorColor = Gold,
-                            focusedLabelColor = Gold,
-                            unfocusedLabelColor = GrayLight
-                        )
+                        colors = fieldColors()
                     )
                 }
 

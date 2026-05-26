@@ -384,8 +384,8 @@ private fun DetectStage(
         ) {
             itemsIndexed(sections) { index, section ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkSurface),
-                    shape = RoundedCornerShape(8.dp)
+                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp)
@@ -461,7 +461,7 @@ private fun ImportCompleteStage(
     ) {
         Card(
             colors = CardDefaults.cardColors(containerColor = DarkCard),
-            shape = RoundedCornerShape(20.dp),
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(

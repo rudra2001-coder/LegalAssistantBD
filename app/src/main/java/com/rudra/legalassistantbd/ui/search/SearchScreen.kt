@@ -54,13 +54,7 @@ fun SearchScreen(
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedTextColor = WhiteSoft,
-                    unfocusedTextColor = WhiteSoft,
-                    focusedBorderColor = Gold,
-                    unfocusedBorderColor = DarkSurfaceVariant,
-                    cursorColor = Gold
-                )
+                colors = fieldColors()
             )
 
             Spacer(Modifier.height(16.dp))

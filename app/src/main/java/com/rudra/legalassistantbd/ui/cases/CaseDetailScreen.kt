@@ -213,7 +213,7 @@ fun CaseDetailScreen(
                         evidence.forEach { ev ->
                             Card(
                                 colors = CardDefaults.cardColors(containerColor = DarkCard),
-                                shape = RoundedCornerShape(12.dp),
+                                shape = RoundedCornerShape(16.dp),
                                 modifier = Modifier.padding(vertical = 4.dp)
                             ) {
                                 Row(
@@ -270,9 +270,9 @@ fun ProcedureGuidanceStep(
     Card(
         onClick = onToggle,
         colors = CardDefaults.cardColors(
-            containerColor = if (isCompleted) SuccessGreen.copy(alpha = 0.08f) else DarkSurface
+            containerColor = if (isCompleted) SuccessGreen.copy(alpha = 0.08f) else DarkCard
         ),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

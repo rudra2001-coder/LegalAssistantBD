@@ -1,4 +1,6 @@
-# Legal Assistant BD - Architecture & Reference
+# Legal Assistant BD — Architecture & Reference
+
+> **Design System**: See [DESIGN.md](./DESIGN.md) for the complete UI design guide (colors, components, spacing, patterns).
 
 ## Project Overview
 AI-powered, offline-first legal operating system for Bangladesh. Built with Kotlin, Jetpack Compose, MVVM + Clean Architecture.
@@ -10,7 +12,7 @@ AI-powered, offline-first legal operating system for Bangladesh. Built with Kotl
 - **MVVM + Clean Architecture** (data/domain/ui/core)
 - **Room DB** (v3) + SQLite FTS5 (unicode61 tokenizer)
 - **Hilt DI** (2.48) | **Coroutines + Flow** | **WorkManager**
-- **Navigation Compose** | **PDFBox-Android** (2.0.29)
+- **Navigation Compose** (bottom nav with save/restore state) | **PDFBox-Android** (2.0.29)
 - **Gson** | **Biometric** | **Datastore Preferences**
 
 ## Module Structure
@@ -113,7 +115,9 @@ app/src/main/java/com/rudra/legalassistantbd/
 ├── case_management/                  # CaseTimelineBuilder
 ├── ui/
 │   ├── theme/                        # Black+Gold Material 3 theme (Color/Theme/Type)
-│   ├── navigation/                   # NavGraph (16 routes)
+│   ├── navigation/                   # NavGraph (18 routes), BottomNavBar
+│   ├── allfeatures/                  # All features grid screen
+│   ├── settings/                     # Settings screen + SettingsViewModel
 │   ├── components/                   # GoldButton, TopBar, SectionCard, etc.
 │   ├── onboarding/                   # 3-page first-launch wizard
 │   ├── dashboard/                    # Main dashboard
@@ -131,25 +135,54 @@ app/src/main/java/com/rudra/legalassistantbd/
 │   └── customsection/                # Custom sections with procedures
 ```
 
-## Navigation Routes (16)
-| Route | Screen | Arguments |
-|-------|--------|-----------|
-| `onboarding` | First-launch wizard | none |
-| `dashboard` | Main dashboard | none |
-| `law_explorer` | Law library | none |
-| `law_detail/{lawId}` | Law detail with sections | lawId: Int |
-| `section_detail/{sectionId}` | Section detail | sectionId: Int |
-| `search` | Full-text search | none |
-| `cases` | Case list | none |
-| `case_detail/{caseId}` | Case detail with procedure guidance | caseId: Int |
-| `create_case` | Create new case | none |
-| `procedures/{sectionId}` | Legal procedure steps | sectionId: Int |
-| `ai_chat` | AI legal assistant | none |
-| `documents` | Document generator | none |
-| `reminders` | Reminder list | none |
-| `pdf_converter` | PDF import (4-stage pipeline) | none |
-| `security` | Security settings | none |
-| `custom_section` | Create/manage custom sections | none |
+## Bottom Navigation Bar
+A Material 3 `NavigationBar` with 5 tabs shown on main screens, auto-hides on detail screens.
+
+| Tab | Route | Icon |
+|-----|-------|------|
+| Home | `dashboard` | Home |
+| Laws | `law_explorer` | LibraryBooks |
+| Cases | `cases` | Gavel |
+| AI | `ai_chat` | SmartToy |
+| All | `all_features` | Dashboard |
+
+- **State persistence**: Each tab preserves its back stack via `saveState`/`restoreState`
+- **Single top**: Prevents duplicate screen stacks
+- **Visual feedback**: Selected tab highlighted in Gold with bold label; unselected in Gray
+- **Visibility**: Only rendered on the 5 tab routes; hidden on all other screens (onboarding, detail, import, settings)
+
+## All Features Screen (`all_features`)
+A comprehensive 3-column grid showing all 13 app features with color-coded icons:
+Dashboard, Law Library, Search, Cases, Create Case, AI Assistant, Documents, Reminders, Procedures, Custom Sections, PDF Import, Security, Settings. Each tile navigates directly to its screen.
+
+## Settings Screen (`settings`)
+A settings screen with its own `SettingsViewModel` (Hilt-injected). Features:
+- **Database Stats**: Displays law, section, case, and reminder counts
+- **Reset to Defaults**: Clears all user data (cases, reminders, imports, custom sections) and reloads the 8 default Bangladesh laws with sections and procedures
+- **About**: App name and version info
+- Confirmation dialog before destructive reset
+
+## Navigation Routes (18)
+| Route | Screen | Arguments | Bottom Nav |
+|-------|--------|-----------|------------|
+| `onboarding` | First-launch wizard | none | hidden |
+| `dashboard` | Main dashboard | none | tab |
+| `law_explorer` | Law library | none | tab |
+| `law_detail/{lawId}` | Law detail with sections | lawId: Int | hidden |
+| `section_detail/{sectionId}` | Section detail | sectionId: Int | hidden |
+| `search` | Full-text search | none | hidden |
+| `cases` | Case list | none | tab |
+| `case_detail/{caseId}` | Case detail with procedure guidance | caseId: Int | hidden |
+| `create_case` | Create new case | none | hidden |
+| `procedures/{sectionId}` | Legal procedure steps | sectionId: Int | hidden |
+| `ai_chat` | AI legal assistant | none | tab |
+| `documents` | Document generator | none | hidden |
+| `reminders` | Reminder list | none | hidden |
+| `pdf_converter` | PDF import (4-stage pipeline) | none | hidden |
+| `security` | Security settings | none | hidden |
+| `custom_section` | Create/manage custom sections | none | hidden |
+| `all_features` | All features grid (13 features) | none | tab |
+| `settings` | App settings and data management | none | hidden |
 
 ## PDF Pipeline (4-Stage)
 
@@ -212,22 +245,39 @@ app/src/main/java/com/rudra/legalassistantbd/
 - Progress persisted in `case_procedure_progress` table
 - Completed steps show green checkmark + "Completed" label
 
+## Design Consistency
+
+All 18 screens follow a unified design system documented in [DESIGN.md](./DESIGN.md). Key rules:
+
+- Every screen (except OnboardingScreen) uses `Scaffold` + `TopBar` + `DarkBackground`
+- All cards use `DarkCard` with `RoundedCornerShape(16.dp)`
+- All text fields use the shared `fieldColors()` helper
+- No duplicated components: `fieldColors()`, `DetailRow`, and `StatCard` live in `CommonComponents.kt`
+- Theme accent colors (Gold, InfoBlue, etc.) used for icon accents; local decorative colors (Blue, Green, Orange) only in DashboardScreen
+
+### Design Cleanup History
+| Change | File |
+|--------|------|
+| Removed duplicate `fieldColors()` | `CustomSectionScreen.kt` |
+| Removed duplicate `DetailRow()` | `SectionDetailScreen.kt` |
+| Replaced inline `OutlinedTextFieldDefaults.colors()` with `fieldColors()` | `AIChatScreen.kt`, `SearchScreen.kt`, `DocumentGeneratorScreen.kt` |
+| Changed `DarkSurface`→`DarkCard` | `SectionCard`, `ProcedureStepCard`, status/info cards across 6 screens |
+| Standardized `RoundedCornerShape` values to 16.dp | 7 screens with non-standard radii |
+| Wrapped OnboardingScreen in `Scaffold` | `OnboardingScreen.kt` |
+| Removed local palette from DashboardScreen (uses theme colors) | `DashboardScreen.kt` |
+
 ## Key Implementation Details
 
 ### Color Scheme (Black + Gold)
-```kotlin
-val Gold = Color(0xFFD4A017)
-val GoldDark = Color(0xFFB8860B)
-val GoldLight = Color(0xFFF0D060)
-val DarkBackground = Color(0xFF0D0D0D)
-val DarkSurface = Color(0xFF1A1A1A)
-val DarkCard = Color(0xFF1E1E1E)
-val WhiteSoft = Color(0xFFF5F5F5)
-val GrayLight = Color(0xFFB0B0B0)
-val GrayMedium = Color(0xFF808080)
-val SuccessGreen = Color(0xFF4CAF50)
-val ErrorRed = Color(0xFFF44336)
-```
+
+Full palette in `ui/theme/Color.kt`. See [DESIGN.md](./DESIGN.md#color-palette) for complete table.
+
+**Design rules:**
+- `Scaffold(containerColor = DarkBackground)` universally
+- `Card(containerColor = DarkCard, shape = RoundedCornerShape(16.dp))` for cards
+- `fieldColors()` from `CommonComponents.kt` for all `OutlinedTextField` instances
+- `TopBar` component for all top app bars (except Dashboard custom header)
+- Screen horizontal padding: `16.dp`, card inner padding: `20.dp`
 
 ### FTS5 Search
 - Tokenizer: `unicode61` for Bengali + English

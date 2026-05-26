@@ -53,13 +53,12 @@ fun OnboardingScreen(onComplete: () -> Unit) {
         )
     )
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(DarkBackground)
-            .statusBarsPadding()
-            .navigationBarsPadding()
-    ) {
+    Scaffold(containerColor = DarkBackground) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
         // Skip button
         Row(
             modifier = Modifier
@@ -86,7 +85,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = 40.dp),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
@@ -170,6 +169,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
         }
 
         Spacer(Modifier.height(16.dp))
+        }
     }
 }
 

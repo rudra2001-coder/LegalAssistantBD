@@ -508,13 +508,4 @@ fun ProcedureStepForm(
     }
 }
 
-@Composable
-fun fieldColors() = OutlinedTextFieldDefaults.colors(
-    focusedTextColor = WhiteSoft,
-    unfocusedTextColor = WhiteSoft,
-    focusedBorderColor = Gold,
-    unfocusedBorderColor = DarkSurfaceVariant,
-    cursorColor = Gold,
-    focusedLabelColor = Gold,
-    unfocusedLabelColor = GrayLight
-)
+

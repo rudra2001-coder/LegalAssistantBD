@@ -1,29 +1,42 @@
 package com.rudra.legalassistantbd.ui.dashboard
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.rudra.legalassistantbd.core.util.Constants
-import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
 
+// ── Palette (local overrides for decorative elements) ─────────────────────────
+private val Blue          = Color(0xFF5B9CF6)
+private val Green         = Color(0xFF52E8A0)
+private val Orange        = Color(0xFFFF8C42)
+private val RedAccent     = Color(0xFFFF5C7A)
+private val Purple        = Color(0xFFB57BEE)
+private val BorderSubtle  = Color(0x12FFFFFF)
+
+// ── Screen ────────────────────────────────────────────────────────────────────
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen(
@@ -32,187 +45,542 @@ fun DashboardScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopBar(title = "Legal Assistant BD")
-        },
-        containerColor = DarkBackground
-    ) { padding ->
+    Scaffold(containerColor = DarkBackground) { padding ->
         if (state.isLoading) {
-            LoadingIndicator(modifier = Modifier.padding(padding))
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = Gold)
+            }
         } else {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
                     .verticalScroll(rememberScrollState())
-                    .padding(16.dp)
             ) {
-                Text(
-                    text = "Dashboard",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = WhiteSoft,
-                    fontWeight = FontWeight.Bold
+                // ── Header ──────────────────────────────────────────────────
+                DashboardHeader()
+
+                Spacer(Modifier.height(18.dp))
+
+                // ── Hero Band ───────────────────────────────────────────────
+                HeroBand(
+                    lawCount = state.lawCount,
+                    sectionCount = state.sectionCount
                 )
-                Spacer(Modifier.height(24.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    StatCard(
-                        title = "Laws",
-                        value = "${state.lawCount}",
-                        icon = Icons.Outlined.LibraryBooks,
-                        modifier = Modifier.weight(1f),
-                        color = Gold
-                    )
-                    StatCard(
-                        title = "Sections",
-                        value = "${state.sectionCount}",
-                        icon = Icons.Outlined.Article,
-                        modifier = Modifier.weight(1f),
-                        color = InfoBlue
-                    )
-                }
-                Spacer(Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    StatCard(
-                        title = "Active Cases",
-                        value = "${state.activeCases}",
-                        icon = Icons.Outlined.Gavel,
-                        modifier = Modifier.weight(1f),
-                        color = SuccessGreen
-                    )
-                    StatCard(
-                        title = "Reminders",
-                        value = "${state.pendingReminders}",
-                        icon = Icons.Outlined.Notifications,
-                        modifier = Modifier.weight(1f),
-                        color = WarningOrange
-                    )
-                }
+                Spacer(Modifier.height(14.dp))
 
-                Spacer(Modifier.height(32.dp))
+                // ── Stat Cards ──────────────────────────────────────────────
+                StatGrid(state = state)
+
+                Spacer(Modifier.height(20.dp))
+
+                // ── Quick Actions ───────────────────────────────────────────
+                SectionHeader(title = "Quick Actions", actionText = "See all")
+
+                Spacer(Modifier.height(14.dp))
+
+                QuickActionsGrid(navController = navController)
+
+                Spacer(Modifier.height(20.dp))
+
+                // ── Recent Activity ──────────────────────────────────────────
+                SectionHeader(title = "Recent Activity", actionText = "View all")
+
+                Spacer(Modifier.height(14.dp))
+
+                RecentActivityList()
+
+                Spacer(Modifier.height(20.dp))
+
+                // ── Footer ───────────────────────────────────────────────────
                 Text(
-                    text = "Quick Actions",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = WhiteSoft,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(Modifier.height(16.dp))
-
-                QuickActionGrid(navController = navController)
-
-                Spacer(Modifier.height(32.dp))
-                Text(
-                    text = "Legal Assistant BD v1.0",
+                    text = "Legal Assistant BD · v1.0 · Bangladesh Law Database",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayMedium,
+                    color = GrayLight,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    fontSize = 11.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
                 )
-                Spacer(Modifier.height(16.dp))
             }
         }
     }
 }
 
-data class QuickAction(
-    val title: String,
-    val icon: ImageVector,
-    val route: String,
-    val color: Color
-)
-
-private val quickActions = listOf(
-    QuickAction("Law Library", Icons.Outlined.LibraryBooks, Constants.ROUTE_LAW_EXPLORER, Gold),
-    QuickAction("Search", Icons.Outlined.Search, Constants.ROUTE_SEARCH, InfoBlue),
-    QuickAction("Cases", Icons.Outlined.Gavel, Constants.ROUTE_CASES, SuccessGreen),
-    QuickAction("Custom Sections", Icons.Outlined.NoteAdd, Constants.ROUTE_CUSTOM_SECTION, Gold),
-    QuickAction("AI Assistant", Icons.Outlined.SmartToy, Constants.ROUTE_AI_CHAT, Gold),
-    QuickAction("Documents", Icons.Outlined.Description, Constants.ROUTE_DOCUMENTS, WarningOrange),
-    QuickAction("Reminders", Icons.Outlined.Notifications, Constants.ROUTE_REMINDERS, ErrorRed),
-    QuickAction("Procedures", Icons.Outlined.AccountTree, Constants.ROUTE_PROCEDURES.replace("/{sectionId}", "/0"), InfoBlue),
-    QuickAction("PDF Import", Icons.Outlined.PictureAsPdf, Constants.ROUTE_PDF_CONVERTER, ErrorRed),
-    QuickAction("Security", Icons.Outlined.Lock, Constants.ROUTE_SECURITY, GoldLight)
-)
-
+// ── Header ────────────────────────────────────────────────────────────────────
 @Composable
-fun QuickActionGrid(navController: NavController) {
-    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        quickActions.chunked(3).forEach { row ->
+private fun DashboardHeader() {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 20.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column {
+            Text(
+                text = "LEGAL ASSISTANT BD",
+                color = GrayLight,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 2.sp
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = buildAnnotatedStringWithGold("Good morning, Counsel 👋"),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.ExtraBold,
+                color = WhiteSoft
+            )
+        }
+
+        // Avatar circle
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(
+                    Brush.linearGradient(listOf(Purple, Blue))
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "RK",
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.ExtraBold
+            )
+        }
+    }
+}
+
+// Helper – annotated string coloring "Counsel" in Gold
+@Composable
+private fun buildAnnotatedStringWithGold(fullText: String): androidx.compose.ui.text.AnnotatedString {
+    return androidx.compose.ui.text.buildAnnotatedString {
+        val parts = fullText.split("Counsel")
+        append(parts[0])
+        pushStyle(androidx.compose.ui.text.SpanStyle(color = Gold))
+        append("Counsel")
+        pop()
+        if (parts.size > 1) append(parts[1])
+    }
+}
+
+// ── Hero Band ─────────────────────────────────────────────────────────────────
+@Composable
+private fun HeroBand(lawCount: Int, sectionCount: Int) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(Color(0xFF2A2040), Color(0xFF1E1B35), Color(0xFF251730))
+                )
+            )
+    ) {
+        // Decorative background glyph
+        Text(
+            text = "⚖",
+            fontSize = 90.sp,
+            color = Color.White.copy(alpha = 0.05f),
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = 8.dp, y = (-8).dp)
+        )
+
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = "TOTAL COVERAGE",
+                color = GrayLight,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.sp
+            )
+            Spacer(Modifier.height(6.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = "$lawCount",
+                    fontSize = 46.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = WhiteSoft,
+                    lineHeight = 46.sp
+                )
+                Spacer(Modifier.width(6.dp))
+                Text(
+                    text = "Laws",
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Gold,
+                    modifier = Modifier.padding(bottom = 6.dp)
+                )
+            }
+            Text(
+                text = "across ${sectionCount.toFormattedString()} sections indexed",
+                color = GrayLight,
+                fontSize = 13.sp
+            )
+            Spacer(Modifier.height(10.dp))
+            // Status pill
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(Green.copy(alpha = 0.12f))
+                    .padding(horizontal = 10.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(5.dp)
             ) {
-                row.forEach { action ->
-                    QuickActionItem(
-                        title = action.title,
-                        icon = action.icon,
-                        color = action.color,
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            navController.navigate(action.route)
-                        }
-                    )
-                }
-                if (row.size < 3) {
-                    repeat(3 - row.size) {
-                        Spacer(Modifier.weight(1f))
-                    }
-                }
+                Box(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .clip(CircleShape)
+                        .background(Green)
+                )
+                Text(
+                    text = "System up to date",
+                    color = Green,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
         }
     }
 }
 
+private fun Int.toFormattedString(): String =
+    if (this >= 1000) "${this / 1000}.${(this % 1000) / 100}k" else toString()
+
+// ── Stat Grid ─────────────────────────────────────────────────────────────────
 @Composable
-fun QuickActionItem(
-    title: String,
+private fun StatGrid(state: DashboardState) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            StatCard(
+                label = "Laws Indexed",
+                value = "${state.lawCount}",
+                icon = Icons.Outlined.LibraryBooks,
+                iconColor = Gold,
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                label = "Sections",
+                value = state.sectionCount.toFormattedString(),
+                icon = Icons.Outlined.Article,
+                iconColor = Blue,
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            StatCard(
+                label = "Active Cases",
+                value = "${state.activeCases}",
+                icon = Icons.Outlined.Gavel,
+                iconColor = Green,
+                modifier = Modifier.weight(1f)
+            )
+            StatCard(
+                label = "Reminders",
+                value = "${state.pendingReminders}",
+                icon = Icons.Outlined.Notifications,
+                iconColor = Orange,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun StatCard(
+    label: String,
+    value: String,
     icon: ImageVector,
-    color: Color,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    iconColor: Color,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier
-            .aspectRatio(1f)
+        modifier = modifier,
+        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(iconColor.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.dp))
+            }
+            Text(
+                text = value,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = WhiteSoft,
+                lineHeight = 26.sp
+            )
+            Text(text = label, fontSize = 12.sp, color = GrayLight, fontWeight = FontWeight.Medium)
+        }
+    }
+}
+
+// ── Section Header ────────────────────────────────────────────────────────────
+@Composable
+private fun SectionHeader(title: String, actionText: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = WhiteSoft)
+        Text(
+            text = "$actionText →",
+            fontSize = 12.sp,
+            color = Gold,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+// ── Quick Actions ─────────────────────────────────────────────────────────────
+private data class ActionItem(
+    val title: String,
+    val description: String,
+    val emoji: String,
+    val accentColor: Color,
+    val route: String,
+    val isWide: Boolean = false
+)
+
+private val actionItems = listOf(
+    ActionItem(
+        title = "AI Legal Assistant",
+        description = "Ask anything about Bangladeshi law",
+        emoji = "🤖",
+        accentColor = Purple,
+        route = Constants.ROUTE_AI_CHAT,
+        isWide = true
+    ),
+    ActionItem("Law Library",      "Browse all indexed laws",   "📚", Gold,      Constants.ROUTE_LAW_EXPLORER),
+    ActionItem("Search",           "Find sections fast",        "🔍", Blue,      Constants.ROUTE_SEARCH),
+    ActionItem("Case Files",       "Track active cases",        "⚖️", Green,     Constants.ROUTE_CASES),
+    ActionItem("Documents",        "Manage your docs",          "📄", Orange,    Constants.ROUTE_DOCUMENTS),
+    ActionItem("PDF Import",       "Convert & index PDFs",      "📑", RedAccent, Constants.ROUTE_PDF_CONVERTER),
+    ActionItem("Custom Sections",  "Add private annotations",   "✏️", Gold,      Constants.ROUTE_CUSTOM_SECTION),
+    ActionItem("Reminders",        "Upcoming court dates",      "🔔", RedAccent, Constants.ROUTE_REMINDERS),
+    ActionItem("Procedures",       "Step-by-step guides",       "🗂️", Blue,      Constants.ROUTE_PROCEDURES.replace("/{sectionId}", "/0")),
+    ActionItem("Security",         "PIN & privacy settings",    "🔒", Color(0xFFAACCFF), Constants.ROUTE_SECURITY),
+)
+
+@Composable
+private fun QuickActionsGrid(navController: NavController) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        val wideItem = actionItems.first { it.isWide }
+        val gridItems = actionItems.filter { !it.isWide }
+
+        // Wide AI card
+        WideActionCard(item = wideItem, onClick = { navController.navigate(wideItem.route) })
+
+        // 2-column grid
+        gridItems.chunked(2).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                row.forEach { item ->
+                    SmallActionCard(
+                        item = item,
+                        modifier = Modifier.weight(1f),
+                        onClick = { navController.navigate(item.route) }
+                    )
+                }
+                if (row.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun WideActionCard(item: ActionItem, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(containerColor = DarkCard),
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Purple.copy(alpha = 0.25f))
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .background(color.copy(alpha = 0.15f), RoundedCornerShape(12.dp)),
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Purple.copy(alpha = 0.18f)),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    tint = color,
-                    modifier = Modifier.size(22.dp)
+                Text(text = item.emoji, fontSize = 22.sp)
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(item.title, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = WhiteSoft)
+                Spacer(Modifier.height(2.dp))
+                Text(item.description, fontSize = 12.sp, color = GrayLight)
+            }
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Purple.copy(alpha = 0.18f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("↗", color = Purple, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun SmallActionCard(item: ActionItem, modifier: Modifier, onClick: () -> Unit) {
+    Card(
+        modifier = modifier
+            .aspectRatio(0.95f)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(42.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(item.accentColor.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = item.emoji, fontSize = 20.sp)
+                }
+                Text(
+                    text = item.title,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = WhiteSoft,
+                    lineHeight = 17.sp
+                )
+                Text(
+                    text = item.description,
+                    fontSize = 11.sp,
+                    color = GrayLight,
+                    lineHeight = 14.sp
                 )
             }
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelSmall,
-                color = GrayLight,
-                textAlign = TextAlign.Center,
-                maxLines = 2
+            // Accent bottom strip
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(bottomStart = 18.dp, bottomEnd = 18.dp))
+                    .background(item.accentColor)
             )
+        }
+    }
+}
+
+// ── Recent Activity ───────────────────────────────────────────────────────────
+private data class RecentItem(
+    val title: String,
+    val subtitle: String,
+    val dotColor: Color,
+    val badgeLabel: String
+)
+
+private val sampleRecentItems = listOf(
+    RecentItem("Penal Code — Section 302", "Viewed 2 hours ago", Green, "LAW"),
+    RecentItem("Case #041 — Rahman v. State", "Updated 5 hours ago", Blue, "CASE"),
+    RecentItem("Court Date Reminder — Jun 3", "Set yesterday", Orange, "ALERT")
+)
+
+@Composable
+private fun RecentActivityList() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        sampleRecentItems.forEach { item ->
+            RecentItemRow(item = item)
+        }
+    }
+}
+
+@Composable
+private fun RecentItemRow(item: RecentItem) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        shape = RoundedCornerShape(16.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp, 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .clip(CircleShape)
+                    .background(item.dotColor)
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(item.title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = WhiteSoft)
+                Spacer(Modifier.height(2.dp))
+                Text(item.subtitle, fontSize = 11.sp, color = GrayLight)
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(item.dotColor.copy(alpha = 0.12f))
+                    .padding(horizontal = 9.dp, vertical = 3.dp)
+            ) {
+                Text(
+                    text = item.badgeLabel,
+                    color = item.dotColor,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 0.5.sp
+                )
+            }
         }
     }
 }

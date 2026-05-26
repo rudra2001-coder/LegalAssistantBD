@@ -36,6 +36,9 @@ interface CaseDao {
     @Query("DELETE FROM cases WHERE id = :id")
     suspend fun delete(id: Int)
 
+    @Query("DELETE FROM cases")
+    suspend fun deleteAll()
+
     @Query("SELECT COUNT(*) FROM cases")
     suspend fun getCount(): Int
 

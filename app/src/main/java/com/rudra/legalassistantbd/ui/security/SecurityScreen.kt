@@ -220,8 +220,8 @@ fun SecurityScreen(
             statusMessage?.let { message ->
                 Spacer(Modifier.height(16.dp))
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkSurface),
-                    shape = RoundedCornerShape(12.dp)
+                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
