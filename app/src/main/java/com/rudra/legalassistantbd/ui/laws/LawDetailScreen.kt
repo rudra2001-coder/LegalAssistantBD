@@ -14,6 +14,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun LawDetailScreen(
@@ -28,6 +29,8 @@ fun LawDetailScreen(
     val law by viewModel.selectedLaw.collectAsState()
     val sections by viewModel.sections.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -36,7 +39,7 @@ fun LawDetailScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (isLoading) {
             LoadingIndicator(modifier = Modifier.padding(padding))
@@ -54,28 +57,28 @@ fun LawDetailScreen(
                         Text(
                             text = l.titleEn,
                             style = MaterialTheme.typography.titleLarge,
-                            color = WhiteSoft,
+                            color = scheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = l.titleBn,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = GrayLight
+                            color = scheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = l.description,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = GrayLight
+                            color = scheme.onSurfaceVariant
                         )
                         Spacer(Modifier.height(16.dp))
-                        HorizontalDivider(color = DarkSurface)
+                        HorizontalDivider(color = scheme.surface)
                         Spacer(Modifier.height(16.dp))
                         Text(
                             text = "Sections (${sections.size})",
                             style = MaterialTheme.typography.titleLarge,
-                            color = WhiteSoft,
+                            color = scheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(12.dp))
@@ -87,7 +90,7 @@ fun LawDetailScreen(
                         Text(
                             text = "No sections loaded",
                             style = MaterialTheme.typography.bodyLarge,
-                            color = GrayMedium
+                            color = c.grayMedium
                         )
                     }
                 } else {

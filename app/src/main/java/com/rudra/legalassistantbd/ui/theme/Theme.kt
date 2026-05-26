@@ -3,6 +3,7 @@ package com.rudra.legalassistantbd.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
 private val DarkColorScheme = darkColorScheme(
     primary = Gold,
@@ -44,16 +45,35 @@ private val LightColorScheme = lightColorScheme(
     onError = White
 )
 
+private val DarkAppColors = AppColors(
+    darkCard = DarkCard,
+    grayMedium = GrayMedium,
+    infoBlue = InfoBlue,
+    successGreen = SuccessGreen,
+    warningOrange = WarningOrange
+)
+
+private val LightAppColors = AppColors(
+    darkCard = GrayLight,
+    grayMedium = GrayDark,
+    infoBlue = InfoBlue,
+    successGreen = SuccessGreen,
+    warningOrange = WarningOrange
+)
+
 @Composable
 fun LegalAssistantBDTheme(
     darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val appColors = if (darkTheme) DarkAppColors else LightAppColors
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = LegalTypography,
-        content = content
-    )
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = LegalTypography,
+            content = content
+        )
+    }
 }

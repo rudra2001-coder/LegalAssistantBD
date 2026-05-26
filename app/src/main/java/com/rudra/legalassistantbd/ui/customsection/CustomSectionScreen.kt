@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -19,6 +21,7 @@ import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.database.entity.LawSectionEntity
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun CustomSectionScreen(
@@ -30,6 +33,8 @@ fun CustomSectionScreen(
     val isSaving by viewModel.isSaving.collectAsState()
     var showForm by remember { mutableStateOf(false) }
     var editSectionId by remember { mutableStateOf<Int?>(null) }
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     LaunchedEffect(Unit) {
         viewModel.resetForm()
@@ -49,13 +54,13 @@ fun CustomSectionScreen(
                         Icon(
                             if (showForm) Icons.Default.Close else Icons.Default.Add,
                             contentDescription = if (showForm) "Close" else "Add",
-                            tint = Gold
+                            tint = scheme.primary
                         )
                     }
                 }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (showForm) {
             CustomSectionForm(
@@ -89,7 +94,7 @@ fun CustomSectionScreen(
                         Text(
                             text = "My Custom Sections (${customSections.size})",
                             style = MaterialTheme.typography.titleLarge,
-                            color = WhiteSoft,
+                            color = scheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(12.dp))
@@ -117,77 +122,81 @@ fun CustomSectionListItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     var showDeleteDialog by remember { mutableStateOf(false) }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
+        Column {
+            Row(
                 modifier = Modifier
-                    .size(44.dp),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Surface(
-                    color = Gold.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(12.dp)
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(scheme.primary.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = section.sectionNumber,
                         style = MaterialTheme.typography.titleSmall,
-                        color = Gold,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(8.dp)
+                        color = scheme.primary,
+                        fontWeight = FontWeight.Bold
                     )
                 }
+                Spacer(Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = section.titleEn,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = scheme.onSurface,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text(
+                        text = section.titleBn,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant
+                    )
+                    StatusPill(text = "Custom", color = scheme.primary)
+                }
+                IconButton(onClick = onEdit) {
+                    Icon(Icons.Outlined.Edit, contentDescription = "Edit", tint = c.infoBlue, modifier = Modifier.size(20.dp))
+                }
+                IconButton(onClick = { showDeleteDialog = true }) {
+                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = scheme.error, modifier = Modifier.size(20.dp))
+                }
             }
-            Spacer(Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = section.titleEn,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = WhiteSoft,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = section.titleBn,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = GrayLight
-                )
-                Text(
-                    text = "Custom Section",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Gold
-                )
-            }
-            IconButton(onClick = onEdit) {
-                Icon(Icons.Outlined.Edit, contentDescription = "Edit", tint = InfoBlue, modifier = Modifier.size(20.dp))
-            }
-            IconButton(onClick = { showDeleteDialog = true }) {
-                Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = ErrorRed, modifier = Modifier.size(20.dp))
-            }
+            Spacer(Modifier.height(12.dp))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+                    .background(scheme.primary)
+            )
         }
     }
 
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            containerColor = DarkSurface,
-            title = { Text("Delete Section", color = WhiteSoft, fontWeight = FontWeight.Bold) },
-            text = { Text("Delete \"${section.titleEn}\" and all its procedures?", color = GrayLight) },
+            containerColor = scheme.surface,
+            title = { Text("Delete Section", color = scheme.onSurface, fontWeight = FontWeight.Bold) },
+            text = { Text("Delete \"${section.titleEn}\" and all its procedures?", color = scheme.onSurfaceVariant) },
             confirmButton = {
                 TextButton(onClick = { onDelete(); showDeleteDialog = false }) {
-                    Text("Delete", color = ErrorRed)
+                    Text("Delete", color = scheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel", color = GrayLight) }
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancel", color = scheme.onSurfaceVariant) }
             }
         )
     }
@@ -202,6 +211,8 @@ fun CustomSectionForm(
 ) {
     val sectionForm by viewModel.sectionForm.collectAsState()
     val procedureSteps by viewModel.procedureSteps.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -212,14 +223,14 @@ fun CustomSectionForm(
             Text(
                 text = "Section Details",
                 style = MaterialTheme.typography.titleLarge,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "Define a custom law section with its legal procedure",
                 style = MaterialTheme.typography.bodySmall,
-                color = GrayLight
+                color = scheme.onSurfaceVariant
             )
         }
 
@@ -329,20 +340,20 @@ fun CustomSectionForm(
                 Checkbox(
                     checked = sectionForm.isBailable,
                     onCheckedChange = { viewModel.updateSectionField(isBailable = it) },
-                    colors = CheckboxDefaults.colors(checkedColor = Gold)
+                    colors = CheckboxDefaults.colors(checkedColor = scheme.primary)
                 )
-                Text("Bailable", color = WhiteSoft, modifier = Modifier.weight(1f))
+                Text("Bailable", color = scheme.onSurface, modifier = Modifier.weight(1f))
                 Checkbox(
                     checked = sectionForm.isCognizable,
                     onCheckedChange = { viewModel.updateSectionField(isCognizable = it) },
-                    colors = CheckboxDefaults.colors(checkedColor = Gold)
+                    colors = CheckboxDefaults.colors(checkedColor = scheme.primary)
                 )
-                Text("Cognizable", color = WhiteSoft)
+                Text("Cognizable", color = scheme.onSurface)
             }
         }
 
         item {
-            HorizontalDivider(color = DarkSurface, modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(color = scheme.surface, modifier = Modifier.padding(vertical = 8.dp))
         }
 
         item {
@@ -354,11 +365,11 @@ fun CustomSectionForm(
                 Text(
                     text = "Procedure Steps",
                     style = MaterialTheme.typography.titleLarge,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 IconButton(onClick = { viewModel.addProcedureStep() }) {
-                    Icon(Icons.Default.AddCircle, contentDescription = "Add Step", tint = Gold)
+                    Icon(Icons.Default.AddCircle, contentDescription = "Add Step", tint = scheme.primary)
                 }
             }
         }
@@ -379,15 +390,15 @@ fun CustomSectionForm(
             saveStatus?.let { status ->
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = if (status.contains("success", true)) SuccessGreen.copy(alpha = 0.1f)
-                        else if (status.contains("Error", true)) ErrorRed.copy(alpha = 0.1f)
-                        else DarkSurface
+                        containerColor = if (status.contains("success", true)) c.successGreen.copy(alpha = 0.1f)
+                        else if (status.contains("Error", true)) scheme.error.copy(alpha = 0.1f)
+                        else scheme.surface
                     ),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Text(
                         text = status,
-                        color = if (status.contains("Error", true)) ErrorRed else SuccessGreen,
+                        color = if (status.contains("Error", true)) scheme.error else c.successGreen,
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -395,7 +406,7 @@ fun CustomSectionForm(
                 Spacer(Modifier.height(12.dp))
             }
 
-            GoldButton(
+            scheme.primaryButton(
                 text = if (isSaving) "Saving..." else "Save Section & Procedures",
                 onClick = {
                     viewModel.saveCustomSection(onSuccess = { onBack() })
@@ -417,8 +428,10 @@ fun ProcedureStepForm(
     onRemove: () -> Unit,
     canRemove: Boolean
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = DarkSurface),
+        colors = CardDefaults.cardColors(containerColor = scheme.surface),
         shape = RoundedCornerShape(12.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -427,13 +440,13 @@ fun ProcedureStepForm(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Surface(
-                    color = Gold.copy(alpha = 0.2f),
+                    color = scheme.primary.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(8.dp)
                 ) {
                     Text(
                         text = "Step ${step.stepNumber}",
                         style = MaterialTheme.typography.labelMedium,
-                        color = Gold,
+                        color = scheme.primary,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
                     )
@@ -441,7 +454,7 @@ fun ProcedureStepForm(
                 Spacer(Modifier.weight(1f))
                 if (canRemove) {
                     IconButton(onClick = onRemove, modifier = Modifier.size(32.dp)) {
-                        Icon(Icons.Outlined.RemoveCircle, contentDescription = "Remove", tint = ErrorRed, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Outlined.RemoveCircle, contentDescription = "Remove", tint = scheme.error, modifier = Modifier.size(20.dp))
                     }
                 }
             }

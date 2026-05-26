@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 // ── Palette (local overrides for decorative elements) ─────────────────────────
 private val Blue          = Color(0xFF5B9CF6)
@@ -44,8 +45,10 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
-    Scaffold(containerColor = DarkBackground) { padding ->
+    Scaffold(containerColor = scheme.background) { padding ->
         if (state.isLoading) {
             Box(
                 modifier = Modifier
@@ -53,7 +56,7 @@ fun DashboardScreen(
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Gold)
+                CircularProgressIndicator(color = scheme.primary)
             }
         } else {
             Column(
@@ -102,7 +105,7 @@ fun DashboardScreen(
                 Text(
                     text = "Legal Assistant BD · v1.0 · Bangladesh Law Database",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayLight,
+                    color = scheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                     fontSize = 11.sp,
                     modifier = Modifier
@@ -117,6 +120,8 @@ fun DashboardScreen(
 // ── Header ────────────────────────────────────────────────────────────────────
 @Composable
 private fun DashboardHeader() {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -128,7 +133,7 @@ private fun DashboardHeader() {
         Column {
             Text(
                 text = "LEGAL ASSISTANT BD",
-                color = GrayLight,
+                color = scheme.onSurfaceVariant,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 2.sp
@@ -138,7 +143,7 @@ private fun DashboardHeader() {
                 text = buildAnnotatedStringWithGold("Good morning, Counsel 👋"),
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.ExtraBold,
-                color = WhiteSoft
+                color = scheme.onSurface
             )
         }
 
@@ -165,10 +170,11 @@ private fun DashboardHeader() {
 // Helper – annotated string coloring "Counsel" in Gold
 @Composable
 private fun buildAnnotatedStringWithGold(fullText: String): androidx.compose.ui.text.AnnotatedString {
+    val scheme = MaterialTheme.colorScheme
     return androidx.compose.ui.text.buildAnnotatedString {
         val parts = fullText.split("Counsel")
         append(parts[0])
-        pushStyle(androidx.compose.ui.text.SpanStyle(color = Gold))
+        pushStyle(androidx.compose.ui.text.SpanStyle(color = scheme.primary))
         append("Counsel")
         pop()
         if (parts.size > 1) append(parts[1])
@@ -178,6 +184,8 @@ private fun buildAnnotatedStringWithGold(fullText: String): androidx.compose.ui.
 // ── Hero Band ─────────────────────────────────────────────────────────────────
 @Composable
 private fun HeroBand(lawCount: Int, sectionCount: Int) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -202,7 +210,7 @@ private fun HeroBand(lawCount: Int, sectionCount: Int) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
                 text = "TOTAL COVERAGE",
-                color = GrayLight,
+                color = scheme.onSurfaceVariant,
                 fontSize = 11.sp,
                 fontWeight = FontWeight.SemiBold,
                 letterSpacing = 1.sp
@@ -213,7 +221,7 @@ private fun HeroBand(lawCount: Int, sectionCount: Int) {
                     text = "$lawCount",
                     fontSize = 46.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     lineHeight = 46.sp
                 )
                 Spacer(Modifier.width(6.dp))
@@ -221,13 +229,13 @@ private fun HeroBand(lawCount: Int, sectionCount: Int) {
                     text = "Laws",
                     fontSize = 26.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Gold,
+                    color = scheme.primary,
                     modifier = Modifier.padding(bottom = 6.dp)
                 )
             }
             Text(
                 text = "across ${sectionCount.toFormattedString()} sections indexed",
-                color = GrayLight,
+                color = scheme.onSurfaceVariant,
                 fontSize = 13.sp
             )
             Spacer(Modifier.height(10.dp))
@@ -263,6 +271,8 @@ private fun Int.toFormattedString(): String =
 // ── Stat Grid ─────────────────────────────────────────────────────────────────
 @Composable
 private fun StatGrid(state: DashboardState) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -274,7 +284,7 @@ private fun StatGrid(state: DashboardState) {
                 label = "Laws Indexed",
                 value = "${state.lawCount}",
                 icon = Icons.Outlined.LibraryBooks,
-                iconColor = Gold,
+                iconColor = scheme.primary,
                 modifier = Modifier.weight(1f)
             )
             StatCard(
@@ -312,9 +322,11 @@ private fun StatCard(
     iconColor: Color,
     modifier: Modifier = Modifier
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         modifier = modifier,
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
     ) {
@@ -332,10 +344,10 @@ private fun StatCard(
                 text = value,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.ExtraBold,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 lineHeight = 26.sp
             )
-            Text(text = label, fontSize = 12.sp, color = GrayLight, fontWeight = FontWeight.Medium)
+            Text(text = label, fontSize = 12.sp, color = scheme.onSurfaceVariant, fontWeight = FontWeight.Medium)
         }
     }
 }
@@ -343,6 +355,8 @@ private fun StatCard(
 // ── Section Header ────────────────────────────────────────────────────────────
 @Composable
 private fun SectionHeader(title: String, actionText: String) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,11 +364,11 @@ private fun SectionHeader(title: String, actionText: String) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(title, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = WhiteSoft)
+        Text(title, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold, color = scheme.onSurface)
         Text(
             text = "$actionText →",
             fontSize = 12.sp,
-            color = Gold,
+            color = scheme.primary,
             fontWeight = FontWeight.Medium
         )
     }
@@ -392,6 +406,8 @@ private val actionItems = listOf(
 
 @Composable
 private fun QuickActionsGrid(navController: NavController) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -422,11 +438,13 @@ private fun QuickActionsGrid(navController: NavController) {
 
 @Composable
 private fun WideActionCard(item: ActionItem, onClick: () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, Purple.copy(alpha = 0.25f))
     ) {
@@ -445,9 +463,9 @@ private fun WideActionCard(item: ActionItem, onClick: () -> Unit) {
                 Text(text = item.emoji, fontSize = 22.sp)
             }
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.title, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = WhiteSoft)
+                Text(item.title, fontSize = 15.sp, fontWeight = FontWeight.ExtraBold, color = scheme.onSurface)
                 Spacer(Modifier.height(2.dp))
-                Text(item.description, fontSize = 12.sp, color = GrayLight)
+                Text(item.description, fontSize = 12.sp, color = scheme.onSurfaceVariant)
             }
             Box(
                 modifier = Modifier
@@ -464,11 +482,13 @@ private fun WideActionCard(item: ActionItem, onClick: () -> Unit) {
 
 @Composable
 private fun SmallActionCard(item: ActionItem, modifier: Modifier, onClick: () -> Unit) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         modifier = modifier
             .aspectRatio(0.95f)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
     ) {
@@ -492,13 +512,13 @@ private fun SmallActionCard(item: ActionItem, modifier: Modifier, onClick: () ->
                     text = item.title,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.ExtraBold,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     lineHeight = 17.sp
                 )
                 Text(
                     text = item.description,
                     fontSize = 11.sp,
-                    color = GrayLight,
+                    color = scheme.onSurfaceVariant,
                     lineHeight = 14.sp
                 )
             }
@@ -531,6 +551,8 @@ private val sampleRecentItems = listOf(
 
 @Composable
 private fun RecentActivityList() {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -545,9 +567,11 @@ private fun RecentActivityList() {
 
 @Composable
 private fun RecentItemRow(item: RecentItem) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp),
         border = androidx.compose.foundation.BorderStroke(1.dp, BorderSubtle)
     ) {
@@ -563,9 +587,9 @@ private fun RecentItemRow(item: RecentItem) {
                     .background(item.dotColor)
             )
             Column(modifier = Modifier.weight(1f)) {
-                Text(item.title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = WhiteSoft)
+                Text(item.title, fontSize = 13.sp, fontWeight = FontWeight.SemiBold, color = scheme.onSurface)
                 Spacer(Modifier.height(2.dp))
-                Text(item.subtitle, fontSize = 11.sp, color = GrayLight)
+                Text(item.subtitle, fontSize = 11.sp, color = scheme.onSurfaceVariant)
             }
             Box(
                 modifier = Modifier

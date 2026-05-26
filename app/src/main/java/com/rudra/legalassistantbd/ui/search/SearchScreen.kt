@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun SearchScreen(
@@ -24,12 +25,14 @@ fun SearchScreen(
     viewModel: SearchViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
             TopBar(title = "Search", onBackClick = { navController.popBackStack() })
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -37,25 +40,37 @@ fun SearchScreen(
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            OutlinedTextField(
-                value = state.query,
-                onValueChange = { viewModel.onQueryChanged(it) },
-                modifier = Modifier.fillMaxWidth(),
-                placeholder = { Text("Search laws, sections, keywords...", color = GrayMedium) },
-                leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = null, tint = GrayLight)
-                },
-                trailingIcon = {
-                    if (state.query.isNotBlank()) {
-                        IconButton(onClick = { viewModel.onQueryChanged("") }) {
-                            Icon(Icons.Default.Close, contentDescription = "Clear", tint = GrayLight)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconBadge(
+                    icon = Icons.Default.Search,
+                    tint = scheme.primary,
+                    size = 40,
+                    iconSize = 22
+                )
+                Spacer(Modifier.width(8.dp))
+                OutlinedTextField(
+                    value = state.query,
+                    onValueChange = { viewModel.onQueryChanged(it) },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Search laws, sections, keywords...", color = c.grayMedium) },
+                    leadingIcon = {
+                        Icon(Icons.Default.Search, contentDescription = null, tint = scheme.onSurfaceVariant)
+                    },
+                    trailingIcon = {
+                        if (state.query.isNotBlank()) {
+                            IconButton(onClick = { viewModel.onQueryChanged("") }) {
+                                Icon(Icons.Default.Close, contentDescription = "Clear", tint = scheme.onSurfaceVariant)
+                            }
                         }
-                    }
-                },
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                colors = fieldColors()
-            )
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = fieldColors()
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -65,7 +80,7 @@ fun SearchScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(
-                        color = Gold,
+                        color = scheme.primary,
                         modifier = Modifier.size(32.dp)
                     )
                 }
@@ -76,17 +91,23 @@ fun SearchScreen(
                     subtitle = "Try different keywords or search in Bengali"
                 )
             } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(state.results) { section ->
-                        SectionCard(
-                            sectionNumber = section.sectionNumber,
-                            title = section.titleEn,
-                            onClick = {
-                                navController.navigate("section_detail/${section.id}")
-                            }
-                        )
+                Column {
+                    SectionHeader(
+                        title = "Results (${state.results.size} found)"
+                    )
+                    Spacer(Modifier.height(12.dp))
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        items(state.results) { section ->
+                            SectionCard(
+                                sectionNumber = section.sectionNumber,
+                                title = section.titleEn,
+                                onClick = {
+                                    navController.navigate("section_detail/${section.id}")
+                                }
+                            )
+                        }
                     }
                 }
             }

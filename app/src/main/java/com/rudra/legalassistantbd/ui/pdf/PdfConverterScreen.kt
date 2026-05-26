@@ -25,10 +25,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.pdf_converter.ParsedSection
-import com.rudra.legalassistantbd.ui.components.GoldButton
-import com.rudra.legalassistantbd.ui.components.TopBar
+
+import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.export.ExportShareUtil
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun PdfConverterScreen(
@@ -38,6 +39,8 @@ fun PdfConverterScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     val exportShareUtil = remember { ExportShareUtil(context) }
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     val pdfLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
@@ -63,7 +66,7 @@ fun PdfConverterScreen(
                 }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -74,14 +77,14 @@ fun PdfConverterScreen(
             Text(
                 text = "Import Law Books",
                 style = MaterialTheme.typography.headlineMedium,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "Upload PDF law books to convert into searchable legal sections",
                 style = MaterialTheme.typography.bodyMedium,
-                color = GrayLight
+                color = scheme.onSurfaceVariant
             )
             Spacer(Modifier.height(20.dp))
 
@@ -129,16 +132,16 @@ fun PdfConverterScreen(
             state.error?.let { error ->
                 Spacer(Modifier.height(12.dp))
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = ErrorRed.copy(alpha = 0.1f)),
+                    colors = CardDefaults.cardColors(containerColor = scheme.error.copy(alpha = 0.1f)),
                     shape = RoundedCornerShape(12.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Outlined.Error, null, tint = ErrorRed)
+                        Icon(Icons.Outlined.Error, null, tint = scheme.error)
                         Spacer(Modifier.width(12.dp))
-                        Text(error, color = ErrorRed, style = MaterialTheme.typography.bodyMedium)
+                        Text(error, color = scheme.error, style = MaterialTheme.typography.bodyMedium)
                     }
                 }
             }
@@ -148,6 +151,8 @@ fun PdfConverterScreen(
 
 @Composable
 private fun StageIndicator(currentStage: PdfStage) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     val stages = listOf(PdfStage.SELECT, PdfStage.EXTRACT, PdfStage.DETECT, PdfStage.IMPORT)
     val labels = listOf("Select", "Extract", "Detect", "Import")
 
@@ -167,17 +172,17 @@ private fun StageIndicator(currentStage: PdfStage) {
                 Surface(
                     shape = RoundedCornerShape(50),
                     color = when {
-                        isDone -> SuccessGreen
-                        isActive -> Gold
-                        else -> DarkSurface
+                        isDone -> c.successGreen
+                        isActive -> scheme.primary
+                        else -> scheme.surface
                     },
                     modifier = Modifier.size(36.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         when {
-                            isDone -> Icon(Icons.Default.Check, null, tint = DarkBackground, modifier = Modifier.size(18.dp))
-                            isActive -> Text("${index + 1}", color = DarkBackground, fontWeight = FontWeight.Bold)
-                            else -> Text("${index + 1}", color = GrayMedium)
+                            isDone -> Icon(Icons.Default.Check, null, tint = scheme.background, modifier = Modifier.size(18.dp))
+                            isActive -> Text("${index + 1}", color = scheme.background, fontWeight = FontWeight.Bold)
+                            else -> Text("${index + 1}", color = c.grayMedium)
                         }
                     }
                 }
@@ -186,8 +191,8 @@ private fun StageIndicator(currentStage: PdfStage) {
                     text = labels[index],
                     style = MaterialTheme.typography.labelSmall,
                     color = when {
-                        isDone || isActive -> WhiteSoft
-                        else -> GrayMedium
+                        isDone || isActive -> scheme.onSurface
+                        else -> c.grayMedium
                     }
                 )
             }
@@ -202,7 +207,7 @@ private fun StageIndicator(currentStage: PdfStage) {
                         )
                 ) {
                     HorizontalDivider(
-                        color = if (index < currentStage.ordinal) SuccessGreen else DarkSurface,
+                        color = if (index < currentStage.ordinal) c.successGreen else scheme.surface,
                         thickness = 2.dp
                     )
                 }
@@ -219,11 +224,13 @@ private fun SelectStage(
     onStart: () -> Unit,
     onDismissHint: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column {
         Card(
             onClick = onPickFile,
             modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = DarkCard),
+            colors = CardDefaults.cardColors(containerColor = c.darkCard),
             shape = RoundedCornerShape(16.dp)
         ) {
             Column(
@@ -235,21 +242,21 @@ private fun SelectStage(
                 Icon(
                     Icons.Outlined.PictureAsPdf,
                     null,
-                    tint = ErrorRed,
+                    tint = scheme.error,
                     modifier = Modifier.size(72.dp)
                 )
                 Spacer(Modifier.height(16.dp))
                 Text(
                     text = if (fileName.isBlank()) "Select PDF File" else fileName,
                     style = MaterialTheme.typography.titleMedium,
-                    color = if (fileName.isBlank()) GrayLight else WhiteSoft,
+                    color = if (fileName.isBlank()) scheme.onSurfaceVariant else scheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
                 if (fileName.isBlank()) {
                     Text(
                         "Tap to browse files",
                         style = MaterialTheme.typography.bodySmall,
-                        color = GrayMedium
+                        color = c.grayMedium
                     )
                 }
             }
@@ -257,7 +264,7 @@ private fun SelectStage(
 
         if (fileName.isNotBlank()) {
             Spacer(Modifier.height(16.dp))
-            GoldButton(
+            scheme.primaryButton(
                 text = "Start Extraction",
                 onClick = onStart,
                 modifier = Modifier.fillMaxWidth(),
@@ -268,26 +275,26 @@ private fun SelectStage(
         if (showSettingsHint && fileName.isBlank()) {
             Spacer(Modifier.height(16.dp))
             Card(
-                colors = CardDefaults.cardColors(containerColor = Gold.copy(alpha = 0.08f)),
+                colors = CardDefaults.cardColors(containerColor = scheme.primary.copy(alpha = 0.08f)),
                 shape = RoundedCornerShape(12.dp)
             ) {
                 Row(
                     modifier = Modifier.padding(16.dp),
                     verticalAlignment = Alignment.Top
                 ) {
-                    Icon(Icons.Outlined.Info, null, tint = Gold, modifier = Modifier.size(20.dp))
+                    Icon(Icons.Outlined.Info, null, tint = scheme.primary, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(12.dp))
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("Tip", color = Gold, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
+                        Text("Tip", color = scheme.primary, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.titleSmall)
                         Spacer(Modifier.height(2.dp))
                         Text(
                             "Upload PDF files containing Bangladesh law sections. Supports Bengali (ধারা) and English formats.",
-                            color = GrayLight,
+                            color = scheme.onSurfaceVariant,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
                     IconButton(onClick = onDismissHint) {
-                        Icon(Icons.Default.Close, null, tint = GrayMedium, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Close, null, tint = c.grayMedium, modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -297,12 +304,14 @@ private fun SelectStage(
 
 @Composable
 private fun ExtractStage(currentPage: Int, pageCount: Int) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = DarkCard),
+            colors = CardDefaults.cardColors(containerColor = c.darkCard),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -313,7 +322,7 @@ private fun ExtractStage(currentPage: Int, pageCount: Int) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 CircularProgressIndicator(
-                    color = Gold,
+                    color = scheme.primary,
                     strokeWidth = 4.dp,
                     modifier = Modifier.size(64.dp)
                 )
@@ -321,7 +330,7 @@ private fun ExtractStage(currentPage: Int, pageCount: Int) {
                 Text(
                     text = "Extracting text from PDF...",
                     style = MaterialTheme.typography.titleMedium,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(Modifier.height(8.dp))
@@ -329,21 +338,21 @@ private fun ExtractStage(currentPage: Int, pageCount: Int) {
                     Text(
                         text = "Page $currentPage of $pageCount",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = GrayLight
+                        color = scheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(12.dp))
                     LinearProgressIndicator(
                         progress = { currentPage.toFloat() / pageCount.toFloat() },
                         modifier = Modifier.fillMaxWidth(),
-                        color = Gold,
-                        trackColor = DarkSurface
+                        color = scheme.primary,
+                        trackColor = scheme.surface
                     )
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "Analyzing document structure...",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayMedium
+                    color = c.grayMedium
                 )
             }
         }
@@ -356,6 +365,8 @@ private fun DetectStage(
     isLoading: Boolean,
     onImport: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -365,14 +376,14 @@ private fun DetectStage(
             Text(
                 text = "Found ${sections.size} sections",
                 style = MaterialTheme.typography.titleLarge,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             if (sections.isNotEmpty()) {
                 Text(
                     text = "${sections.filter { it.content.isNotBlank() }.size} with content",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayMedium
+                    color = c.grayMedium
                 )
             }
         }
@@ -384,7 +395,7 @@ private fun DetectStage(
         ) {
             itemsIndexed(sections) { index, section ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
@@ -393,12 +404,12 @@ private fun DetectStage(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Surface(
                                 shape = RoundedCornerShape(4.dp),
-                                color = Gold.copy(alpha = 0.15f),
+                                color = scheme.primary.copy(alpha = 0.15f),
                                 modifier = Modifier.padding(end = 8.dp)
                             ) {
                                 Text(
                                     text = section.sectionNumber,
-                                    color = Gold,
+                                    color = scheme.primary,
                                     style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.Bold,
                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
@@ -407,7 +418,7 @@ private fun DetectStage(
                             Text(
                                 text = section.title.ifBlank { "Untitled Section" },
                                 style = MaterialTheme.typography.titleSmall,
-                                color = WhiteSoft,
+                                color = scheme.onSurface,
                                 fontWeight = FontWeight.Medium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -418,7 +429,7 @@ private fun DetectStage(
                             Text(
                                 text = section.content.take(120),
                                 style = MaterialTheme.typography.bodySmall,
-                                color = GrayLight,
+                                color = scheme.onSurfaceVariant,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -429,7 +440,7 @@ private fun DetectStage(
         }
 
         Spacer(Modifier.height(16.dp))
-        GoldButton(
+        scheme.primaryButton(
             text = if (isLoading) "Importing..." else "Import ${sections.size} Sections to Database",
             onClick = onImport,
             modifier = Modifier.fillMaxWidth(),
@@ -440,7 +451,7 @@ private fun DetectStage(
         Text(
             text = "Sections will be searchable via FTS5 full-text search",
             style = MaterialTheme.typography.bodySmall,
-            color = GrayMedium,
+            color = c.grayMedium,
             modifier = Modifier.padding(start = 4.dp)
         )
     }
@@ -454,13 +465,15 @@ private fun ImportCompleteStage(
     onShareSummary: () -> Unit,
     onImportAnother: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Card(
-            colors = CardDefaults.cardColors(containerColor = DarkCard),
+            colors = CardDefaults.cardColors(containerColor = c.darkCard),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -472,14 +485,14 @@ private fun ImportCompleteStage(
             ) {
                 Surface(
                     shape = RoundedCornerShape(50),
-                    color = SuccessGreen.copy(alpha = 0.15f),
+                    color = c.successGreen.copy(alpha = 0.15f),
                     modifier = Modifier.size(72.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Default.CheckCircle,
                             null,
-                            tint = SuccessGreen,
+                            tint = c.successGreen,
                             modifier = Modifier.size(48.dp)
                         )
                     }
@@ -488,30 +501,30 @@ private fun ImportCompleteStage(
                 Text(
                     text = "Import Successful",
                     style = MaterialTheme.typography.headlineSmall,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = fileName,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Gold
+                    color = scheme.primary
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = "$sectionsCount sections added to database",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
                     text = "Auto-generated basic legal procedures",
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayMedium
+                    color = c.grayMedium
                 )
                 Spacer(Modifier.height(24.dp))
 
-                GoldButton(
+                scheme.primaryButton(
                     text = "View in Search",
                     onClick = onViewInSearch,
                     modifier = Modifier.fillMaxWidth(),
@@ -522,7 +535,7 @@ private fun ImportCompleteStage(
                 OutlinedButton(
                     onClick = onShareSummary,
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.outlinedButtonColors(contentColor = Gold),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = scheme.primary),
                     border = ButtonDefaults.outlinedButtonBorder
                 ) {
                     Icon(Icons.Default.Share, null, modifier = Modifier.size(18.dp))
@@ -531,9 +544,9 @@ private fun ImportCompleteStage(
                 }
                 Spacer(Modifier.height(8.dp))
                 TextButton(onClick = onImportAnother) {
-                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp), tint = GrayLight)
+                    Icon(Icons.Default.Add, null, modifier = Modifier.size(18.dp), tint = scheme.onSurfaceVariant)
                     Spacer(Modifier.width(4.dp))
-                    Text("Import Another PDF", color = GrayLight)
+                    Text("Import Another PDF", color = scheme.onSurfaceVariant)
                 }
             }
         }

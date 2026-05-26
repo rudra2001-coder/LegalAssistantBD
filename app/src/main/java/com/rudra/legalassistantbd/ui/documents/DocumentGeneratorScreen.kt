@@ -24,6 +24,7 @@ import com.rudra.legalassistantbd.documents.DocumentTemplates
 import com.rudra.legalassistantbd.documents.Template
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
@@ -84,6 +85,8 @@ fun DocumentGeneratorScreen(
     val selectedTemplate by viewModel.selectedTemplate.collectAsState()
     val fieldValues by viewModel.fieldValues.collectAsState()
     val generatedContent by viewModel.generatedContent.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -92,7 +95,7 @@ fun DocumentGeneratorScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -105,7 +108,7 @@ fun DocumentGeneratorScreen(
                 Text(
                     text = "Select Document Type",
                     style = MaterialTheme.typography.titleLarge,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(16.dp))
@@ -116,7 +119,7 @@ fun DocumentGeneratorScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = c.darkCard),
                         shape = RoundedCornerShape(12.dp)
                     ) {
                         Row(
@@ -126,7 +129,7 @@ fun DocumentGeneratorScreen(
                             Icon(
                                 Icons.Outlined.Description,
                                 contentDescription = null,
-                                tint = Gold,
+                                tint = scheme.primary,
                                 modifier = Modifier.size(32.dp)
                             )
                             Spacer(Modifier.width(16.dp))
@@ -134,13 +137,13 @@ fun DocumentGeneratorScreen(
                                 Text(
                                     text = template.name,
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = WhiteSoft,
+                                    color = scheme.onSurface,
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
                                     text = template.type,
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = GrayLight
+                                    color = scheme.onSurfaceVariant
                                 )
                             }
                         }
@@ -150,14 +153,14 @@ fun DocumentGeneratorScreen(
                 Text(
                     text = selectedTemplate!!.name,
                     style = MaterialTheme.typography.titleLarge,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = "Fill in the details below",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(16.dp))
 
@@ -175,7 +178,7 @@ fun DocumentGeneratorScreen(
                 }
 
                 Spacer(Modifier.height(24.dp))
-                GoldButton(
+                scheme.primaryButton(
                     text = "Generate Document",
                     onClick = { viewModel.generateDocument() },
                     modifier = Modifier.fillMaxWidth(),
@@ -183,7 +186,7 @@ fun DocumentGeneratorScreen(
                 )
 
                 Spacer(Modifier.height(8.dp))
-                GoldButton(
+                scheme.primaryButton(
                     text = "Back to Templates",
                     onClick = { viewModel.reset() },
                     modifier = Modifier.fillMaxWidth()
@@ -192,25 +195,25 @@ fun DocumentGeneratorScreen(
                 Text(
                     text = selectedTemplate!!.name,
                     style = MaterialTheme.typography.titleLarge,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(Modifier.height(16.dp))
 
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Text(
                         text = generatedContent!!,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = WhiteSoft,
+                        color = scheme.onSurface,
                         modifier = Modifier.padding(16.dp)
                     )
                 }
 
                 Spacer(Modifier.height(16.dp))
-                GoldButton(
+                scheme.primaryButton(
                     text = "Export to Text",
                     onClick = {
                         viewModel.exportDocument(selectedTemplate!!.name)
@@ -220,7 +223,7 @@ fun DocumentGeneratorScreen(
                 )
 
                 Spacer(Modifier.height(8.dp))
-                GoldButton(
+                scheme.primaryButton(
                     text = "Edit Again",
                     onClick = { viewModel.generateDocument() },
                     modifier = Modifier.fillMaxWidth()

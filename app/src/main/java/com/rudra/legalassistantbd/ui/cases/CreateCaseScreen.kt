@@ -18,6 +18,7 @@ import com.rudra.legalassistantbd.core.database.entity.LawSectionEntity
 import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,12 +37,14 @@ fun CreateCaseScreen(
     var selectedSectionTitle by remember { mutableStateOf("None") }
     val types = listOf(Constants.CASE_TYPE_CRIMINAL, Constants.CASE_TYPE_CIVIL, Constants.CASE_TYPE_FAMILY, Constants.CASE_TYPE_LABOUR, Constants.CASE_TYPE_OTHER)
     val sections by viewModel.allSections.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
             TopBar(title = "Create Case", onBackClick = { navController.popBackStack() })
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -53,7 +56,7 @@ fun CreateCaseScreen(
             Text(
                 text = "New Case",
                 style = MaterialTheme.typography.headlineMedium,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(24.dp))
@@ -105,21 +108,21 @@ fun CreateCaseScreen(
             Spacer(Modifier.height(16.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                colors = CardDefaults.cardColors(containerColor = c.darkCard),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(12.dp)) {
                     Text(
                         text = "Link Law Section (Optional)",
                         style = MaterialTheme.typography.titleSmall,
-                        color = Gold,
+                        color = scheme.primary,
                         fontWeight = FontWeight.SemiBold
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "Linking a section will guide you through its legal procedure",
                         style = MaterialTheme.typography.bodySmall,
-                        color = GrayLight
+                        color = scheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(8.dp))
 
@@ -144,7 +147,7 @@ fun CreateCaseScreen(
                             onDismissRequest = { expandedSectionMenu = false }
                         ) {
                             DropdownMenuItem(
-                                text = { Text("None", color = GrayLight) },
+                                text = { Text("None", color = scheme.onSurfaceVariant) },
                                 onClick = {
                                     selectedSectionId = null
                                     selectedSectionTitle = "None"
@@ -157,13 +160,13 @@ fun CreateCaseScreen(
                                         Column {
                                             Text(
                                                 text = "${section.sectionNumber}. ${section.titleEn}",
-                                                color = WhiteSoft,
+                                                color = scheme.onSurface,
                                                 style = MaterialTheme.typography.bodyMedium
                                             )
                                             if (section.isCustom) {
                                                 Text(
                                                     text = "Custom Section",
-                                                    color = Gold,
+                                                    color = scheme.primary,
                                                     style = MaterialTheme.typography.labelSmall
                                                 )
                                             }
@@ -220,7 +223,7 @@ fun CreateCaseScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            GoldButton(
+            scheme.primaryButton(
                 text = "Create Case",
                 onClick = {
                     if (title.isNotBlank()) {
@@ -244,19 +247,19 @@ fun CreateCaseScreen(
             if (selectedSectionId != null) {
                 Spacer(Modifier.height(8.dp))
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = Gold, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.CheckCircle, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Procedure guidance will be available for this case",
                             style = MaterialTheme.typography.bodySmall,
-                            color = Gold
+                            color = scheme.primary
                         )
                     }
                 }

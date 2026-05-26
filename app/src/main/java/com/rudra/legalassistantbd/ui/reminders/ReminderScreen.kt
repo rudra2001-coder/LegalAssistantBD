@@ -19,6 +19,7 @@ import com.rudra.legalassistantbd.core.database.entity.ReminderEntity
 import com.rudra.legalassistantbd.core.util.toFormattedDateTime
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import kotlinx.coroutines.launch
 
 @Composable
@@ -28,6 +29,8 @@ fun ReminderScreen(
 ) {
     val reminders by viewModel.reminders.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -36,12 +39,12 @@ fun ReminderScreen(
                 onBackClick = { navController.popBackStack() },
                 actions = {
                     IconButton(onClick = { showDialog = true }) {
-                        Icon(Icons.Default.Add, contentDescription = "Add Reminder", tint = Gold)
+                        Icon(Icons.Default.Add, contentDescription = "Add Reminder", tint = scheme.primary)
                     }
                 }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (reminders.isEmpty()) {
             EmptyState(
@@ -51,20 +54,23 @@ fun ReminderScreen(
                 modifier = Modifier.padding(padding)
             )
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .padding(horizontal = 16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(reminders) { reminder ->
-                    ReminderCard(
-                        reminder = reminder,
-                        onComplete = { viewModel.markCompleted(reminder.id) },
-                        onDelete = { viewModel.deleteReminder(reminder.id) }
-                    )
+            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+                SectionHeader(title = "Reminders")
+                Spacer(Modifier.height(12.dp))
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(reminders) { reminder ->
+                        ReminderCard(
+                            reminder = reminder,
+                            onComplete = { viewModel.markCompleted(reminder.id) },
+                            onDelete = { viewModel.deleteReminder(reminder.id) }
+                        )
+                    }
                 }
             }
         }
@@ -87,40 +93,42 @@ fun ReminderCard(
     onComplete: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     val typeColor = when (reminder.reminderType) {
-        "Hearing" -> Gold
-        "Deadline" -> ErrorRed
-        "Document Submission" -> InfoBlue
-        else -> GrayLight
+        "Hearing" -> scheme.primary
+        "Deadline" -> scheme.error
+        "Document Submission" -> c.infoBlue
+        else -> scheme.onSurfaceVariant
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            IconBadge(
+                icon = Icons.Outlined.Notifications,
+                tint = typeColor,
+                size = 40,
+                iconSize = 22
+            )
+            Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Surface(
-                        color = typeColor.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(6.dp)
-                    ) {
-                        Text(
-                            text = reminder.reminderType,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = typeColor,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
-                        )
-                    }
+                    StatusPill(
+                        text = reminder.reminderType,
+                        color = typeColor
+                    )
                     if (reminder.isCompleted) {
                         Spacer(Modifier.width(8.dp))
                         Icon(
                             Icons.Default.CheckCircle,
                             contentDescription = null,
-                            tint = SuccessGreen,
+                            tint = c.successGreen,
                             modifier = Modifier.size(16.dp)
                         )
                     }
@@ -129,31 +137,31 @@ fun ReminderCard(
                 Text(
                     text = reminder.title,
                     style = MaterialTheme.typography.titleSmall,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
                 reminder.description?.let {
                     Text(
                         text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = GrayLight
+                        color = scheme.onSurfaceVariant
                     )
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = reminder.dueTimestamp.toFormattedDateTime(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = GrayMedium
+                    color = c.grayMedium
                 )
             }
             Column {
                 if (!reminder.isCompleted) {
                     IconButton(onClick = onComplete) {
-                        Icon(Icons.Outlined.CheckCircle, contentDescription = "Complete", tint = SuccessGreen)
+                        Icon(Icons.Outlined.CheckCircle, contentDescription = "Complete", tint = c.successGreen)
                     }
                 }
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = ErrorRed)
+                    Icon(Icons.Outlined.Delete, contentDescription = "Delete", tint = scheme.error)
                 }
             }
         }
@@ -166,6 +174,8 @@ fun AddReminderDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, String, Long, String) -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     var title by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var reminderType by remember { mutableStateOf("Hearing") }
@@ -175,8 +185,8 @@ fun AddReminderDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        containerColor = DarkSurface,
-        title = { Text("Add Reminder", color = WhiteSoft, fontWeight = FontWeight.Bold) },
+        containerColor = scheme.surface,
+        title = { Text("Add Reminder", color = scheme.onSurface, fontWeight = FontWeight.Bold) },
         text = {
             Column {
                 OutlinedTextField(
@@ -224,10 +234,12 @@ fun AddReminderDialog(
             TextButton(
                 onClick = { onConfirm(title, description, selectedDate, reminderType) },
                 enabled = title.isNotBlank()
-            ) { Text("Add", color = Gold) }
+            ) { Text("Add", color = scheme.primary) }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel", color = GrayLight) }
+            TextButton(onClick = onDismiss) { Text("Cancel", color = scheme.onSurfaceVariant) }
         }
     )
 }
+
+

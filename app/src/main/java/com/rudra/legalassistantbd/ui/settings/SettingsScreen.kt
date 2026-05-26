@@ -14,8 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.rudra.legalassistantbd.ui.components.StatusPill
 import com.rudra.legalassistantbd.ui.components.TopBar
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun SettingsScreen(
@@ -24,12 +26,14 @@ fun SettingsScreen(
 ) {
     val state by viewModel.state.collectAsState()
     var showResetDialog by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
             TopBar(title = "Settings", onBackClick = { navController.popBackStack() })
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -41,41 +45,41 @@ fun SettingsScreen(
             Text(
                 text = "Settings",
                 style = MaterialTheme.typography.headlineMedium,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(24.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                colors = CardDefaults.cardColors(containerColor = c.darkCard),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "Database Stats",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Gold,
+                        color = scheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(12.dp))
-                    StatRow("Laws", "${state.lawCount}", Icons.Outlined.LibraryBooks, Gold)
-                    StatRow("Sections", "${state.sectionCount}", Icons.Outlined.Article, InfoBlue)
-                    StatRow("Cases", "${state.caseCount}", Icons.Outlined.Gavel, SuccessGreen)
-                    StatRow("Reminders", "${state.reminderCount}", Icons.Outlined.Notifications, WarningOrange)
+                    StatRow("Laws", "${state.lawCount}", Icons.Outlined.LibraryBooks, scheme.primary)
+                    StatRow("Sections", "${state.sectionCount}", Icons.Outlined.Article, c.infoBlue)
+                    StatRow("Cases", "${state.caseCount}", Icons.Outlined.Gavel, c.successGreen)
+                    StatRow("Reminders", "${state.reminderCount}", Icons.Outlined.Notifications, c.warningOrange)
                 }
             }
 
             Spacer(Modifier.height(16.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                colors = CardDefaults.cardColors(containerColor = c.darkCard),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "Actions",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Gold,
+                        color = scheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(12.dp))
@@ -83,7 +87,7 @@ fun SettingsScreen(
                         icon = Icons.Outlined.Refresh,
                         title = "Reset to Defaults",
                         subtitle = "Clear all data and reload default laws",
-                        iconColor = WarningOrange,
+                        iconColor = c.warningOrange,
                         onClick = { showResetDialog = true }
                     )
                 }
@@ -92,35 +96,35 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                colors = CardDefaults.cardColors(containerColor = c.darkCard),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "About",
                         style = MaterialTheme.typography.titleMedium,
-                        color = Gold,
+                        color = scheme.primary,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(12.dp))
-                    StatRow("App Name", "Legal Assistant BD", Icons.Outlined.Info, Gold)
-                    StatRow("Version", viewModel.getAppVersion(), Icons.Outlined.Tag, InfoBlue)
+                    StatRow("App Name", "Legal Assistant BD", Icons.Outlined.Info, scheme.primary)
+                    StatRow("Version", viewModel.getAppVersion(), Icons.Outlined.Tag, c.infoBlue)
                 }
             }
 
             state.statusMessage?.let { message ->
                 Spacer(Modifier.height(16.dp))
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Outlined.Info, null, tint = Gold, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Outlined.Info, null, tint = scheme.primary, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(12.dp))
-                        Text(message, color = WhiteSoft, style = MaterialTheme.typography.bodyMedium)
+                        StatusPill(text = message, color = scheme.primary)
                     }
                 }
             }
@@ -130,12 +134,12 @@ fun SettingsScreen(
     if (showResetDialog) {
         AlertDialog(
             onDismissRequest = { showResetDialog = false },
-            containerColor = DarkSurface,
-            title = { Text("Reset to Defaults", color = WhiteSoft, fontWeight = FontWeight.Bold) },
+            containerColor = scheme.surface,
+            title = { Text("Reset to Defaults", color = scheme.onSurface, fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     "This will delete all your data including cases, reminders, imported PDFs, and custom sections. Default laws will be reloaded. This cannot be undone.",
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
             },
             confirmButton = {
@@ -144,10 +148,10 @@ fun SettingsScreen(
                         viewModel.resetToDefaults()
                         showResetDialog = false
                     }
-                ) { Text("Reset", color = ErrorRed) }
+                ) { Text("Reset", color = scheme.error) }
             },
             dismissButton = {
-                TextButton(onClick = { showResetDialog = false }) { Text("Cancel", color = GrayLight) }
+                TextButton(onClick = { showResetDialog = false }) { Text("Cancel", color = scheme.onSurfaceVariant) }
             }
         )
     }
@@ -155,6 +159,8 @@ fun SettingsScreen(
 
 @Composable
 private fun StatRow(label: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: androidx.compose.ui.graphics.Color) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -163,8 +169,8 @@ private fun StatRow(label: String, value: String, icon: androidx.compose.ui.grap
     ) {
         Icon(icon, null, tint = color, modifier = Modifier.size(22.dp))
         Spacer(Modifier.width(12.dp))
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = GrayLight, modifier = Modifier.weight(1f))
-        Text(value, style = MaterialTheme.typography.bodyMedium, color = WhiteSoft, fontWeight = FontWeight.Medium)
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurfaceVariant, modifier = Modifier.weight(1f))
+        Text(value, style = MaterialTheme.typography.bodyMedium, color = scheme.onSurface, fontWeight = FontWeight.Medium)
     }
 }
 
@@ -176,9 +182,11 @@ private fun SettingActionRow(
     iconColor: androidx.compose.ui.graphics.Color,
     onClick: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Surface(
         onClick = onClick,
-        color = DarkCard,
+        color = c.darkCard,
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(
@@ -190,10 +198,10 @@ private fun SettingActionRow(
             Icon(icon, null, tint = iconColor, modifier = Modifier.size(24.dp))
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, color = WhiteSoft, fontWeight = FontWeight.Medium)
-                Text(subtitle, color = GrayLight, style = MaterialTheme.typography.bodySmall)
+                Text(title, color = scheme.onSurface, fontWeight = FontWeight.Medium)
+                Text(subtitle, color = scheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
             }
-            Icon(Icons.Outlined.ChevronRight, null, tint = GrayMedium, modifier = Modifier.size(20.dp))
+            Icon(Icons.Outlined.ChevronRight, null, tint = c.grayMedium, modifier = Modifier.size(20.dp))
         }
     }
 }

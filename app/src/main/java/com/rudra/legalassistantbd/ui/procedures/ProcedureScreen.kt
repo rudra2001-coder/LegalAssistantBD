@@ -3,7 +3,9 @@ package com.rudra.legalassistantbd.ui.procedures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
@@ -23,6 +25,7 @@ import com.rudra.legalassistantbd.data.repository.LawRepository
 import com.rudra.legalassistantbd.data.repository.ProcedureRepository
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -62,6 +65,8 @@ fun ProcedureScreen(
     val procedures by viewModel.procedures.collectAsState()
     val section by viewModel.sectionInfo.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -70,7 +75,7 @@ fun ProcedureScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (isLoading) {
             LoadingIndicator(modifier = Modifier.padding(padding))
@@ -86,30 +91,42 @@ fun ProcedureScreen(
                 item {
                     section?.let { sec ->
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = DarkCard),
+                            colors = CardDefaults.cardColors(containerColor = c.darkCard),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 Text(
                                     text = "Section ${sec.sectionNumber}",
                                     style = MaterialTheme.typography.titleSmall,
-                                    color = Gold
+                                    color = scheme.primary
                                 )
                                 Text(
                                     text = sec.titleEn,
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = WhiteSoft,
+                                    color = scheme.onSurface,
                                     fontWeight = FontWeight.Bold
                                 )
                             }
                         }
                         Spacer(Modifier.height(16.dp))
-                        Text(
-                            text = "Step-by-Step Procedure",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = WhiteSoft,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Step-by-Step Procedure",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = scheme.onSurface
+                            )
+                            StatusPill(
+                                text = "${procedures.size} steps",
+                                color = scheme.primary
+                            )
+                        }
                         Spacer(Modifier.height(12.dp))
                     }
                 }
@@ -117,7 +134,7 @@ fun ProcedureScreen(
                 if (procedures.isEmpty()) {
                     item {
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = DarkCard),
+                            colors = CardDefaults.cardColors(containerColor = c.darkCard),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(
@@ -129,20 +146,20 @@ fun ProcedureScreen(
                                 Icon(
                                     Icons.Outlined.Info,
                                     contentDescription = null,
-                                    tint = GrayLight,
+                                    tint = scheme.onSurfaceVariant,
                                     modifier = Modifier.size(40.dp)
                                 )
                                 Spacer(Modifier.height(12.dp))
                                 Text(
                                     text = "Procedure information not yet available for this section.",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    color = GrayLight
+                                    color = scheme.onSurfaceVariant
                                 )
                                 Spacer(Modifier.height(8.dp))
                                 Text(
                                     text = "Sample procedure shown below",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = GrayMedium
+                                    color = c.grayMedium
                                 )
                             }
                         }
@@ -174,61 +191,59 @@ fun ProcedureStepCard(
     requiredDocs: String?,
     duration: String?
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp)
     ) {
         Row(modifier = Modifier.padding(16.dp)) {
             Box(
                 modifier = Modifier
-                    .size(40.dp),
-                contentAlignment = Alignment.TopCenter
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(scheme.primary.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
             ) {
-                Surface(
-                    color = Gold.copy(alpha = 0.2f),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text(
-                        text = "$stepNumber",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = Gold,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(8.dp)
-                    )
-                }
+                Text(
+                    text = "$stepNumber",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = scheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
             }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = titleBn,
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 if (requiredDocs != null) {
                     Spacer(Modifier.height(8.dp))
                     Text(
                         text = "Required: $requiredDocs",
                         style = MaterialTheme.typography.labelSmall,
-                        color = WarningOrange
+                        color = c.warningOrange
                     )
                 }
                 if (duration != null) {
                     Text(
                         text = "Duration: $duration",
                         style = MaterialTheme.typography.labelSmall,
-                        color = InfoBlue
+                        color = c.infoBlue
                     )
                 }
             }

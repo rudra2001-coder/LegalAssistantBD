@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.launch
 
@@ -32,28 +33,30 @@ fun OnboardingScreen(onComplete: () -> Unit) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val scope = rememberCoroutineScope()
 
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     val pages = listOf(
         OnboardingPage(
             icon = Icons.Outlined.Gavel,
             title = "Welcome to Legal Assistant BD",
             subtitle = "Your complete offline legal operating system for Bangladesh. Access laws, sections, procedures, and more — all on your device.",
-            color = Gold
+            color = scheme.primary
         ),
         OnboardingPage(
             icon = Icons.Outlined.PictureAsPdf,
             title = "Import Law Books via PDF",
             subtitle = "Upload Bangladesh law books in PDF format. Our engine extracts sections, structures them, and makes them fully searchable — automatically.",
-            color = ErrorRed
+            color = scheme.error
         ),
         OnboardingPage(
             icon = Icons.Outlined.Search,
             title = "Full-Text Search in Bengali & English",
             subtitle = "Search across all imported laws in both Bengali (বাংলা) and English. Find relevant sections, procedures, and legal guidance instantly.",
-            color = SuccessGreen
+            color = c.successGreen
         )
     )
 
-    Scaffold(containerColor = DarkBackground) { padding ->
+    Scaffold(containerColor = scheme.background) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -70,7 +73,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 markOnboardingComplete(context)
                 onComplete()
             }) {
-                Text("Skip", color = GrayLight)
+                Text("Skip", color = scheme.onSurfaceVariant)
             }
         }
 
@@ -107,7 +110,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 Text(
                     text = page.title,
                     style = MaterialTheme.typography.headlineSmall,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
@@ -115,7 +118,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 Text(
                     text = page.subtitle,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = GrayLight,
+                    color = scheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 )
             }
@@ -135,7 +138,7 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                         .size(if (pagerState.currentPage == index) 24.dp else 8.dp, 8.dp)
                         .clip(CircleShape)
                         .background(
-                            if (pagerState.currentPage == index) Gold else DarkSurface
+                            if (pagerState.currentPage == index) scheme.primary else scheme.surface
                         )
                 )
             }
@@ -157,12 +160,12 @@ fun OnboardingScreen(onComplete: () -> Unit) {
                 .fillMaxWidth()
                 .padding(horizontal = 40.dp, vertical = 24.dp)
                 .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Gold),
+            colors = ButtonDefaults.buttonColors(containerColor = scheme.primary),
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
                 text = if (pagerState.currentPage < 2) "Next" else "Get Started",
-                color = DarkBackground,
+                color = scheme.background,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.titleMedium
             )

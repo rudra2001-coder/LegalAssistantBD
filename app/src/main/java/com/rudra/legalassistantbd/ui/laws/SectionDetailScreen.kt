@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun SectionDetailScreen(
@@ -29,6 +30,8 @@ fun SectionDetailScreen(
 
     val section by viewModel.selectedSection.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -37,7 +40,7 @@ fun SectionDetailScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (isLoading) {
             LoadingIndicator(modifier = Modifier.padding(padding))
@@ -51,28 +54,28 @@ fun SectionDetailScreen(
                         .padding(16.dp)
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = c.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "Section ${sec.sectionNumber}",
                                 style = MaterialTheme.typography.titleLarge,
-                                color = Gold,
+                                color = scheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = sec.titleEn,
                                 style = MaterialTheme.typography.titleMedium,
-                                color = WhiteSoft,
+                                color = scheme.onSurface,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Spacer(Modifier.height(4.dp))
                             Text(
                                 text = sec.titleBn,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = GrayLight
+                                color = scheme.onSurfaceVariant
                             )
                         }
                     }
@@ -80,20 +83,20 @@ fun SectionDetailScreen(
                     Spacer(Modifier.height(16.dp))
 
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = c.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "Content (English)",
                                 style = MaterialTheme.typography.titleSmall,
-                                color = GrayLight
+                                color = scheme.onSurfaceVariant
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = sec.contentEn,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = WhiteSoft
+                                color = scheme.onSurface
                             )
                         }
                     }
@@ -101,20 +104,20 @@ fun SectionDetailScreen(
                     Spacer(Modifier.height(12.dp))
 
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = c.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "বিষয়বস্তু (বাংলা)",
                                 style = MaterialTheme.typography.titleSmall,
-                                color = GrayLight
+                                color = scheme.onSurfaceVariant
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = sec.contentBn,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = WhiteSoft
+                                color = scheme.onSurface
                             )
                         }
                     }
@@ -122,14 +125,14 @@ fun SectionDetailScreen(
                     if (sec.punishment != null || sec.courtType != null || sec.bailStatus != null) {
                         Spacer(Modifier.height(16.dp))
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = DarkCard),
+                            colors = CardDefaults.cardColors(containerColor = c.darkCard),
                             shape = RoundedCornerShape(16.dp)
                         ) {
                             Column(modifier = Modifier.padding(20.dp)) {
                                 Text(
                                     text = "Legal Details",
                                     style = MaterialTheme.typography.titleMedium,
-                                    color = Gold,
+                                    color = scheme.primary,
                                     fontWeight = FontWeight.Bold
                                 )
                                 Spacer(Modifier.height(12.dp))
@@ -149,7 +152,7 @@ fun SectionDetailScreen(
 
                     Spacer(Modifier.height(24.dp))
 
-                    GoldButton(
+                    scheme.primaryButton(
                         text = "View Legal Procedure",
                         onClick = {
                             navController.navigate("procedures/${sectionId}")

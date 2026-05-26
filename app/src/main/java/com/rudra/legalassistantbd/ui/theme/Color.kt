@@ -1,7 +1,9 @@
 package com.rudra.legalassistantbd.ui.theme
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+// ── Core palette (used in DarkColorScheme / LightColorScheme) ─────────────────
 val Gold = Color(0xFFD4A017)
 val GoldDark = Color(0xFFB8860B)
 val GoldLight = Color(0xFFF0D060)
@@ -22,3 +24,22 @@ val SuccessGreen = Color(0xFF4CAF50)
 val WarningOrange = Color(0xFFFF9800)
 val ErrorRed = Color(0xFFF44336)
 val InfoBlue = Color(0xFF2196F3)
+
+// ── Extended colors (not in standard Material3 scheme) ────────────────────────
+data class AppColors(
+    val darkCard: Color,
+    val grayMedium: Color,
+    val infoBlue: Color,
+    val successGreen: Color,
+    val warningOrange: Color
+)
+
+val LocalAppColors = staticCompositionLocalOf {
+    AppColors(
+        darkCard = DarkCard,
+        grayMedium = GrayMedium,
+        infoBlue = InfoBlue,
+        successGreen = SuccessGreen,
+        warningOrange = WarningOrange
+    )
+}

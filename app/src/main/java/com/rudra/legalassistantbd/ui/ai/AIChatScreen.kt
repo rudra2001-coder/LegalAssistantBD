@@ -22,6 +22,7 @@ import com.rudra.legalassistantbd.ai.AIResponse
 import com.rudra.legalassistantbd.ai.OfflineLegalAI
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -99,6 +100,8 @@ fun AIChatScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
@@ -110,7 +113,7 @@ fun AIChatScreen(
         topBar = {
             TopBar(title = "AI Legal Assistant", onBackClick = { navController.popBackStack() })
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -140,7 +143,7 @@ fun AIChatScreen(
             }
 
             Surface(
-                color = DarkSurface,
+                color = scheme.surface,
                 shadowElevation = 8.dp
             ) {
                 Row(
@@ -153,7 +156,7 @@ fun AIChatScreen(
                         value = inputText,
                         onValueChange = { inputText = it },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Ask a legal question...", color = GrayMedium) },
+                        placeholder = { Text("Ask a legal question...", color = c.grayMedium) },
                         singleLine = true,
                         shape = RoundedCornerShape(24.dp),
                         colors = fieldColors()
@@ -167,8 +170,8 @@ fun AIChatScreen(
                             }
                         },
                         colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = Gold,
-                            contentColor = DarkBackground
+                            containerColor = scheme.primary,
+                            contentColor = scheme.background
                         )
                     ) {
                         Icon(Icons.Default.Send, contentDescription = "Send")
@@ -181,9 +184,11 @@ fun AIChatScreen(
 
 @Composable
 fun ChatBubble(message: ChatMessage) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     val alignment = if (message.isUser) Alignment.End else Alignment.Start
-    val bgColor = if (message.isUser) Gold.copy(alpha = 0.15f) else DarkCard
-    val textColor = if (message.isUser) Gold else WhiteSoft
+    val bgColor = if (message.isUser) scheme.primary.copy(alpha = 0.15f) else c.darkCard
+    val textColor = if (message.isUser) scheme.primary else scheme.onSurface
 
     Column(
         modifier = Modifier.fillMaxWidth(),

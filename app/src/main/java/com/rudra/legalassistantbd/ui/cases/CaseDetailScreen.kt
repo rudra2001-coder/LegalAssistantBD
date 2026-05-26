@@ -21,6 +21,7 @@ import com.rudra.legalassistantbd.core.util.Constants.ROUTE_PROCEDURE_GUIDANCE
 import com.rudra.legalassistantbd.core.util.toFormattedDate
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 @Composable
 fun CaseDetailScreen(
@@ -39,6 +40,8 @@ fun CaseDetailScreen(
     val sectionProcedures by viewModel.sectionProcedures.collectAsState()
     val procedureProgress by viewModel.procedureProgress.collectAsState()
     val progressSummary by viewModel.progressSummary.collectAsState()
+    val scheme = MaterialTheme.colorScheme
+    val appColors = LocalAppColors.current
 
     Scaffold(
         topBar = {
@@ -47,7 +50,7 @@ fun CaseDetailScreen(
                 onBackClick = { navController.popBackStack() }
             )
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         if (isLoading) {
             LoadingIndicator(modifier = Modifier.padding(padding))
@@ -61,7 +64,7 @@ fun CaseDetailScreen(
                         .padding(16.dp)
                 ) {
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = appColors.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
@@ -72,22 +75,22 @@ fun CaseDetailScreen(
                                 Text(
                                     text = c.caseNumber,
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = GrayLight
+                                    color = scheme.onSurfaceVariant
                                 )
                                 Surface(
                                     color = when(c.status) {
-                                        "Active" -> SuccessGreen
-                                        "Pending" -> WarningOrange
-                                        else -> GrayMedium
+                                        "Active" -> appColors.successGreen
+                                        "Pending" -> appColors.warningOrange
+                                        else -> appColors.grayMedium
                                     }.copy(alpha = 0.15f),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
                                     Text(
                                         text = c.status,
                                         color = when(c.status) {
-                                            "Active" -> SuccessGreen
-                                            "Pending" -> WarningOrange
-                                            else -> GrayMedium
+                                            "Active" -> appColors.successGreen
+                                            "Pending" -> appColors.warningOrange
+                                            else -> appColors.grayMedium
                                         },
                                         style = MaterialTheme.typography.labelSmall,
                                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
@@ -98,14 +101,14 @@ fun CaseDetailScreen(
                             Text(
                                 text = c.title,
                                 style = MaterialTheme.typography.headlineSmall,
-                                color = WhiteSoft,
+                                color = scheme.onSurface,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = c.caseType,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Gold
+                                color = scheme.primary
                             )
                         }
                     }
@@ -113,14 +116,14 @@ fun CaseDetailScreen(
                     Spacer(Modifier.height(16.dp))
 
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = appColors.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "Case Information",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Gold,
+                                color = scheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(12.dp))
@@ -131,7 +134,7 @@ fun CaseDetailScreen(
                             c.nextHearing?.let { DetailRow("Next Hearing", it.toFormattedDate()) }
                             if (linkedSection != null) {
                                 Spacer(Modifier.height(8.dp))
-                                HorizontalDivider(color = DarkSurfaceVariant)
+                                HorizontalDivider(color = scheme.surfaceVariant)
                                 Spacer(Modifier.height(8.dp))
                                 DetailRow("Linked Section", "Sec ${linkedSection!!.sectionNumber}: ${linkedSection!!.titleEn}")
                                 DetailRow("Procedure Progress", "${progressSummary.first}/${progressSummary.second}")
@@ -142,21 +145,21 @@ fun CaseDetailScreen(
                     Spacer(Modifier.height(16.dp))
 
                     Card(
-                        colors = CardDefaults.cardColors(containerColor = DarkCard),
+                        colors = CardDefaults.cardColors(containerColor = appColors.darkCard),
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
                             Text(
                                 text = "Description",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = Gold,
+                                color = scheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
                                 text = c.description ?: "No description",
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = WhiteSoft
+                                color = scheme.onSurface
                             )
                         }
                     }
@@ -166,14 +169,14 @@ fun CaseDetailScreen(
                         Text(
                             text = "Procedure Guidance",
                             style = MaterialTheme.typography.titleLarge,
-                            color = WhiteSoft,
+                            color = scheme.onSurface,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
                             text = linkedSection!!.titleEn,
                             style = MaterialTheme.typography.bodySmall,
-                            color = Gold
+                            color = scheme.primary
                         )
                         Spacer(Modifier.height(12.dp))
 
@@ -198,7 +201,7 @@ fun CaseDetailScreen(
                     Text(
                         text = "Evidence (${evidence.size})",
                         style = MaterialTheme.typography.titleMedium,
-                        color = WhiteSoft,
+                        color = scheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(12.dp))
@@ -207,12 +210,12 @@ fun CaseDetailScreen(
                         Text(
                             text = "No evidence added yet",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = GrayMedium
+                            color = appColors.grayMedium
                         )
                     } else {
                         evidence.forEach { ev ->
                             Card(
-                                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                                colors = CardDefaults.cardColors(containerColor = appColors.darkCard),
                                 shape = RoundedCornerShape(16.dp),
                                 modifier = Modifier.padding(vertical = 4.dp)
                             ) {
@@ -223,14 +226,14 @@ fun CaseDetailScreen(
                                     Icon(
                                         Icons.Outlined.Description,
                                         contentDescription = null,
-                                        tint = Gold,
+                                        tint = scheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )
                                     Spacer(Modifier.width(12.dp))
                                     Column {
-                                        Text(ev.title, color = WhiteSoft, fontWeight = FontWeight.Medium)
+                                        Text(ev.title, color = scheme.onSurface, fontWeight = FontWeight.Medium)
                                         ev.description?.let {
-                                            Text(it, color = GrayLight, style = MaterialTheme.typography.bodySmall)
+                                            Text(it, color = scheme.onSurfaceVariant, style = MaterialTheme.typography.bodySmall)
                                         }
                                     }
                                 }
@@ -243,12 +246,12 @@ fun CaseDetailScreen(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        GoldButton(
+                        scheme.primaryButton(
                             text = "Mark Closed",
                             onClick = { viewModel.updateCaseStatus(caseId, "Closed") },
                             modifier = Modifier.weight(1f)
                         )
-                        GoldButton(
+                        scheme.primaryButton(
                             text = "Delete",
                             onClick = { navController.popBackStack() },
                             modifier = Modifier.weight(1f)
@@ -267,10 +270,12 @@ fun ProcedureGuidanceStep(
     stepNumber: Int,
     onToggle: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         onClick = onToggle,
         colors = CardDefaults.cardColors(
-            containerColor = if (isCompleted) SuccessGreen.copy(alpha = 0.08f) else DarkCard
+            containerColor = if (isCompleted) c.successGreen.copy(alpha = 0.08f) else c.darkCard
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -281,60 +286,60 @@ fun ProcedureGuidanceStep(
             Icon(
                 if (isCompleted) Icons.Default.CheckCircleOutline else Icons.Outlined.RadioButtonUnchecked,
                 contentDescription = null,
-                tint = if (isCompleted) SuccessGreen else GrayMedium,
+                tint = if (isCompleted) c.successGreen else c.grayMedium,
                 modifier = Modifier.size(24.dp)
             )
             Spacer(Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Surface(
-                        color = Gold.copy(alpha = 0.15f),
+                        color = scheme.primary.copy(alpha = 0.15f),
                         shape = RoundedCornerShape(6.dp)
                     ) {
                         Text(
                             text = "Step $stepNumber",
                             style = MaterialTheme.typography.labelSmall,
-                            color = Gold,
+                            color = scheme.primary,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                         )
                     }
                     if (isCompleted) {
                         Spacer(Modifier.width(8.dp))
-                        Text("Completed", style = MaterialTheme.typography.labelSmall, color = SuccessGreen)
+                        Text("Completed", style = MaterialTheme.typography.labelSmall, color = c.successGreen)
                     }
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(
                     text = procedure.titleEn,
                     style = MaterialTheme.typography.titleSmall,
-                    color = WhiteSoft,
+                    color = scheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
                     text = procedure.titleBn,
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = procedure.descriptionEn,
                     style = MaterialTheme.typography.bodySmall,
-                    color = GrayLight
+                    color = scheme.onSurfaceVariant
                 )
                 procedure.requiredDocuments?.let {
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "Docs: $it",
                         style = MaterialTheme.typography.labelSmall,
-                        color = WarningOrange
+                        color = c.warningOrange
                     )
                 }
                 procedure.duration?.let {
                     Text(
                         text = "Time: $it",
                         style = MaterialTheme.typography.labelSmall,
-                        color = InfoBlue
+                        color = c.infoBlue
                     )
                 }
             }

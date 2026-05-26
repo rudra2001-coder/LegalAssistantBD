@@ -22,6 +22,7 @@ import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.ui.components.TopBar
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
 private data class FeatureItem(
     val title: String,
@@ -48,11 +49,13 @@ private val allFeatures = listOf(
 
 @Composable
 fun AllFeaturesScreen(navController: NavController) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Scaffold(
         topBar = {
             TopBar(title = "All Features")
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -64,14 +67,14 @@ fun AllFeaturesScreen(navController: NavController) {
             Text(
                 text = "All Features",
                 style = MaterialTheme.typography.headlineMedium,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "${allFeatures.size} features available",
                 style = MaterialTheme.typography.bodyMedium,
-                color = GrayLight
+                color = scheme.onSurfaceVariant
             )
             Spacer(Modifier.height(20.dp))
 
@@ -109,11 +112,13 @@ private fun FeatureGridItem(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
     Card(
         modifier = modifier
             .aspectRatio(1f)
             .clickable(onClick = onClick),
-        colors = CardDefaults.cardColors(containerColor = DarkCard),
+        colors = CardDefaults.cardColors(containerColor = c.darkCard),
         shape = RoundedCornerShape(16.dp)
     ) {
         Column(
@@ -141,7 +146,7 @@ private fun FeatureGridItem(
             Text(
                 text = title,
                 style = MaterialTheme.typography.labelSmall,
-                color = GrayLight,
+                color = scheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
                 maxLines = 2
             )

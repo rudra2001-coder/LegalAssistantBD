@@ -18,8 +18,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.security.SecurityManager
+import com.rudra.legalassistantbd.ui.components.StatusPill
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
+import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -92,12 +94,14 @@ fun SecurityScreen(
     var currentPin by remember { mutableStateOf("") }
     var newPin by remember { mutableStateOf("") }
     var confirmPin by remember { mutableStateOf("") }
+    val scheme = MaterialTheme.colorScheme
+    val c = LocalAppColors.current
 
     Scaffold(
         topBar = {
             TopBar(title = "Security", onBackClick = { navController.popBackStack() })
         },
-        containerColor = DarkBackground
+        containerColor = scheme.background
     ) { padding ->
         Column(
             modifier = Modifier
@@ -108,13 +112,13 @@ fun SecurityScreen(
             Text(
                 text = "Security Settings",
                 style = MaterialTheme.typography.headlineMedium,
-                color = WhiteSoft,
+                color = scheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
             Spacer(Modifier.height(24.dp))
 
             Card(
-                colors = CardDefaults.cardColors(containerColor = DarkCard),
+                colors = CardDefaults.cardColors(containerColor = c.darkCard),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
@@ -125,7 +129,7 @@ fun SecurityScreen(
                         Icon(
                             Icons.Outlined.Lock,
                             contentDescription = null,
-                            tint = Gold,
+                            tint = scheme.primary,
                             modifier = Modifier.size(32.dp)
                         )
                         Spacer(Modifier.width(16.dp))
@@ -133,13 +137,13 @@ fun SecurityScreen(
                             Text(
                                 text = "App Lock",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = WhiteSoft,
+                                color = scheme.onSurface,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
                                 text = "Require PIN to open the app",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = GrayLight
+                                color = scheme.onSurfaceVariant
                             )
                         }
                         Switch(
@@ -151,24 +155,24 @@ fun SecurityScreen(
                                     viewModel.toggleAppLock(enabled)
                                 }
                             },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Gold)
+                            colors = SwitchDefaults.colors(checkedTrackColor = scheme.primary)
                         )
                     }
 
                     if (isPinSet) {
                         HorizontalDivider(
-                            color = DarkSurfaceVariant,
+                            color = scheme.surfaceVariant,
                             modifier = Modifier.padding(vertical = 16.dp)
                         )
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Outlined.Keyboard, contentDescription = null, tint = GrayLight, modifier = Modifier.size(24.dp))
+                            Icon(Icons.Outlined.Keyboard, contentDescription = null, tint = scheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
                             Spacer(Modifier.width(16.dp))
-                            Text("Change PIN", color = WhiteSoft, modifier = Modifier.weight(1f))
+                            Text("Change PIN", color = scheme.onSurface, modifier = Modifier.weight(1f))
                             TextButton(onClick = { showChangePinDialog = true }) {
-                                Text("Change", color = Gold)
+                                Text("Change", color = scheme.primary)
                             }
                         }
                     }
@@ -179,7 +183,7 @@ fun SecurityScreen(
 
             if (isBiometricAvailable) {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
@@ -191,7 +195,7 @@ fun SecurityScreen(
                         Icon(
                             Icons.Outlined.Fingerprint,
                             contentDescription = null,
-                            tint = Gold,
+                            tint = scheme.primary,
                             modifier = Modifier.size(32.dp)
                         )
                         Spacer(Modifier.width(16.dp))
@@ -199,19 +203,19 @@ fun SecurityScreen(
                             Text(
                                 text = "Biometric Auth",
                                 style = MaterialTheme.typography.titleMedium,
-                                color = WhiteSoft,
+                                color = scheme.onSurface,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
                                 text = "Use fingerprint to unlock",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = GrayLight
+                                color = scheme.onSurfaceVariant
                             )
                         }
                         Switch(
                             checked = isBiometricEnabled,
                             onCheckedChange = { viewModel.toggleBiometric(it) },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Gold)
+                            colors = SwitchDefaults.colors(checkedTrackColor = scheme.primary)
                         )
                     }
                 }
@@ -220,19 +224,19 @@ fun SecurityScreen(
             statusMessage?.let { message ->
                 Spacer(Modifier.height(16.dp))
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = DarkCard),
+                    colors = CardDefaults.cardColors(containerColor = c.darkCard),
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(Icons.Outlined.Info, contentDescription = null, tint = Gold, modifier = Modifier.size(20.dp))
+                        val statusColor = if (message.contains("Incorrect", true)) scheme.error else c.successGreen
+                        Icon(Icons.Outlined.Info, contentDescription = null, tint = scheme.primary, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(12.dp))
-                        Text(
+                        StatusPill(
                             text = message,
-                            color = WhiteSoft,
-                            style = MaterialTheme.typography.bodyMedium
+                            color = statusColor
                         )
                     }
                 }
@@ -243,8 +247,8 @@ fun SecurityScreen(
     if (showPinDialog) {
         AlertDialog(
             onDismissRequest = { showPinDialog = false },
-            containerColor = DarkSurface,
-            title = { Text("Set PIN", color = WhiteSoft, fontWeight = FontWeight.Bold) },
+            containerColor = scheme.surface,
+            title = { Text("Set PIN", color = scheme.onSurface, fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -280,10 +284,10 @@ fun SecurityScreen(
                         }
                     },
                     enabled = newPin == confirmPin && newPin.length >= 4
-                ) { Text("Set PIN", color = Gold) }
+                ) { Text("Set PIN", color = scheme.primary) }
             },
             dismissButton = {
-                TextButton(onClick = { showPinDialog = false }) { Text("Cancel", color = GrayLight) }
+                TextButton(onClick = { showPinDialog = false }) { Text("Cancel", color = scheme.onSurfaceVariant) }
             }
         )
     }
@@ -291,8 +295,8 @@ fun SecurityScreen(
     if (showChangePinDialog) {
         AlertDialog(
             onDismissRequest = { showChangePinDialog = false },
-            containerColor = DarkSurface,
-            title = { Text("Change PIN", color = WhiteSoft, fontWeight = FontWeight.Bold) },
+            containerColor = scheme.surface,
+            title = { Text("Change PIN", color = scheme.onSurface, fontWeight = FontWeight.Bold) },
             text = {
                 Column {
                     OutlinedTextField(
@@ -338,10 +342,10 @@ fun SecurityScreen(
                         }
                     },
                     enabled = newPin == confirmPin && newPin.length >= 4 && currentPin.isNotBlank()
-                ) { Text("Change", color = Gold) }
+                ) { Text("Change", color = scheme.primary) }
             },
             dismissButton = {
-                TextButton(onClick = { showChangePinDialog = false }) { Text("Cancel", color = GrayLight) }
+                TextButton(onClick = { showChangePinDialog = false }) { Text("Cancel", color = scheme.onSurfaceVariant) }
             }
         )
     }
