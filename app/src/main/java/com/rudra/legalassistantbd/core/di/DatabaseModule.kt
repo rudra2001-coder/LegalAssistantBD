@@ -36,4 +36,8 @@ object DatabaseModule {
     @Provides fun provideEvidenceDao(db: LegalDatabase): EvidenceDao = db.evidenceDao()
     @Provides fun provideCaseProcedureProgressDao(db: LegalDatabase): CaseProcedureProgressDao = db.caseProcedureProgressDao()
     @Provides fun providePdfImportDao(db: LegalDatabase): PdfImportDao = db.pdfImportDao()
+    @Provides fun provideHearingDao(db: LegalDatabase): HearingDao = db.hearingDao()
+    @Provides fun provideBailDao(db: LegalDatabase): BailDao = db.bailDao()
+    @Provides fun provideCaseDocumentDao(db: LegalDatabase): CaseDocumentDao = db.caseDocumentDao()
+    @Provides fun provideCaseNoteDao(db: LegalDatabase): CaseNoteDao = db.caseNoteDao()
 }

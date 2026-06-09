@@ -9,6 +9,7 @@ object Constants {
     const val CASE_STATUS_PENDING = "Pending"
     const val CASE_STATUS_CLOSED = "Closed"
     const val CASE_STATUS_DRAFT = "Draft"
+    val CASE_STATUSES = listOf(CASE_STATUS_ACTIVE, CASE_STATUS_PENDING, CASE_STATUS_CLOSED, CASE_STATUS_DRAFT)
 
     // Case Types
     const val CASE_TYPE_CRIMINAL = "Criminal"
@@ -16,12 +17,52 @@ object Constants {
     const val CASE_TYPE_FAMILY = "Family"
     const val CASE_TYPE_LABOUR = "Labour"
     const val CASE_TYPE_OTHER = "Other"
+    val CASE_TYPES = listOf(CASE_TYPE_CRIMINAL, CASE_TYPE_CIVIL, CASE_TYPE_FAMILY, CASE_TYPE_LABOUR, CASE_TYPE_OTHER)
 
     // Reminder Types
     const val REMINDER_HEARING = "Hearing"
     const val REMINDER_DEADLINE = "Deadline"
     const val REMINDER_DOCUMENT = "Document Submission"
     const val REMINDER_OTHER = "Other"
+
+    // Hearing Types
+    const val HEARING_FIRST = "First Hearing"
+    const val HEARING_REGULAR = "Regular Hearing"
+    const val HEARING_FINAL = "Final Hearing"
+    const val HEARING_ARGUMENT = "Argument"
+    const val HEARING_BAIL = "Bail Hearing"
+    const val HEARING_OTHER = "Other"
+    val HEARING_TYPES = listOf(HEARING_FIRST, HEARING_REGULAR, HEARING_FINAL, HEARING_ARGUMENT, HEARING_BAIL, HEARING_OTHER)
+
+    // Hearing Outcomes
+    const val HEARING_OUTCOME_ADJOURNED = "Adjourned"
+    const val HEARING_OUTCOME_COMPLETED = "Completed"
+    const val HEARING_OUTCOME_PARTIAL = "Partially Heard"
+    const val HEARING_OUTCOME_RESERVED = "Order Reserved"
+    const val HEARING_OUTCOME_OTHER = "Other"
+    val HEARING_OUTCOMES = listOf(HEARING_OUTCOME_COMPLETED, HEARING_OUTCOME_ADJOURNED, HEARING_OUTCOME_PARTIAL, HEARING_OUTCOME_RESERVED, HEARING_OUTCOME_OTHER)
+
+    // Bail Types
+    const val BAIL_REGULAR = "Regular"
+    const val BAIL_ANTICIPATORY = "Anticipatory"
+    const val BAIL_INTERIM = "Interim"
+    const val BAIL_DEFAULT = "Default"
+    const val BAIL_OTHER = "Other"
+    val BAIL_TYPES = listOf(BAIL_REGULAR, BAIL_ANTICIPATORY, BAIL_INTERIM, BAIL_DEFAULT, BAIL_OTHER)
+
+    // Bail Statuses
+    const val BAIL_STATUS_FILED = "Filed"
+    const val BAIL_STATUS_PENDING = "Pending"
+    const val BAIL_STATUS_GRANTED = "Granted"
+    const val BAIL_STATUS_REJECTED = "Rejected"
+    const val BAIL_STATUS_CANCELLED = "Cancelled"
+    val BAIL_STATUSES = listOf(BAIL_STATUS_FILED, BAIL_STATUS_PENDING, BAIL_STATUS_GRANTED, BAIL_STATUS_REJECTED, BAIL_STATUS_CANCELLED)
+
+    // Document Types
+    const val DOC_TYPE_IMAGE = "Image"
+    const val DOC_TYPE_PDF = "PDF"
+    const val DOC_TYPE_DOCUMENT = "Document"
+    const val DOC_TYPE_OTHER = "Other"
 
     // PDF Converter
     const val PDF_MIME_TYPE = "application/pdf"

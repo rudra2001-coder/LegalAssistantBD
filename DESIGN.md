@@ -227,6 +227,45 @@ AlertDialog(
 
 ---
 
+## Tab Patterns
+
+### Case Detail Tabs (`CaseDetailScreen`)
+Use `TabRow` for switching between content sections:
+```kotlin
+TabRow(
+    selectedTabIndex = selectedTab,
+    containerColor = scheme.surface,
+    contentColor = scheme.primary
+) {
+    tabs.forEachIndexed { index, title ->
+        Tab(
+            selected = selectedTab == index,
+            onClick = { selectedTab = index },
+            text = { Text(title, fontWeight = ...) }
+        )
+    }
+}
+```
+All case detail functionality (Hearings, Documents, Bail, Notes) is handled via internal tabs, no separate navigation routes.
+
+### Filter Tabs (`CaseListScreen`)
+Use `ScrollableTabRow` with `edgePadding = 16.dp` and no divider for status filter chips:
+```kotlin
+ScrollableTabRow(
+    selectedTabIndex = ...,
+    containerColor = scheme.background,
+    contentColor = scheme.primary,
+    edgePadding = 16.dp,
+    divider = {}
+) {
+    filters.forEach { filter ->
+        Tab(selected = ..., onClick = { ... }, text = { Text(filter) })
+    }
+}
+```
+
+---
+
 ## Code Conventions
 
 1. **Always use shared `fieldColors()`** — never inline `OutlinedTextFieldDefaults.colors()`

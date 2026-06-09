@@ -5,12 +5,12 @@
 ## Project Overview
 AI-powered, offline-first legal operating system for Bangladesh. Built with Kotlin, Jetpack Compose, MVVM + Clean Architecture.
 
-**Source files**: 85 Kotlin files across 9 functional modules.
+**Source files**: 93 Kotlin files across 9 functional modules.
 
 ## Tech Stack
 - **Kotlin** 2.2.10 | **Jetpack Compose** (BOM 2026.02.01) | **Material 3**
 - **MVVM + Clean Architecture** (data/domain/ui/core)
-- **Room DB** (v3) + SQLite FTS5 (unicode61 tokenizer)
+- **Room DB** (v4) + SQLite FTS5 (unicode61 tokenizer)
 - **Hilt DI** (2.48) | **Coroutines + Flow** | **WorkManager**
 - **Navigation Compose** (bottom nav with save/restore state) | **PDFBox-Android** (2.0.29)
 - **Gson** | **Biometric** | **Datastore Preferences**
@@ -30,11 +30,16 @@ AI-powered, offline-first legal operating system for Bangladesh. Built with Kotl
 - 300ms debounced search across all imported laws
 
 ### 3. Case Management (`case_management/`, `ui/cases/`)
-- Case creation (multi-type: Criminal/Civil/Family/Labour)
-- Client CRM and opponent tracking
-- Evidence management (PDF/image)
+- Case creation (multi-type: Criminal/Civil/Family/Labour) with enhanced fields: advocate details, police station, FIR number/date, filing number, case year
+- Client CRM with father name, occupation; inline client creation during case creation
+- Evidence management (PDF/image) with file picker
+- **5-tab case detail interface**: Overview, Hearings, Documents, Bail, Notes
+- **Hearing management**: Add/edit hearings with type (First/Regular/Final/Argument/Bail), outcome tracking (Adjourned/Completed/Reserved), next hearing date scheduling
+- **Bail petition management**: Track bail petitions (Regular/Anticipatory/Interim), status (Filed/Pending/Granted/Rejected), order details, surety details, bail amount
+- **Document/image upload**: Camera/gallery image picker, document file picker, inline preview in case detail
+- **Case diary/notes**: Timestamped diary entries, add/delete notes
 - Timeline UI (case events)
-- Case status tracking (Active/Pending/Closed)
+- Case status tracking (Active/Pending/Closed/Draft) with filter tabs on list screen
 - Section-linked procedure guidance checklist
 
 ### 4. Legal Procedure Engine (`ui/procedures/`, `ui/procedure/`)
@@ -71,7 +76,7 @@ AI-powered, offline-first legal operating system for Bangladesh. Built with Kotl
 - Post-import: success screen with "View in Search", "Share Summary", "Import Another"
 - Share/export any section or import summary as plain text
 
-## Database Tables (v3)
+## Database Tables (v4)
 | Table | Purpose |
 |-------|---------|
 | `laws` | Law metadata (title, year, description) |
@@ -79,16 +84,21 @@ AI-powered, offline-first legal operating system for Bangladesh. Built with Kotl
 | `law_sections_fts` | FTS4 virtual table (auto-sync, unicode61) |
 | `law_keywords` | Keywords and synonyms per section |
 | `procedures` | Step-by-step legal procedures |
-| `cases` | Case management |
-| `clients` | Client CRM |
+| `cases` | Case management (advocate, FIR, police station, filing details) |
+| `clients` | Client CRM (father name, occupation) |
 | `evidence` | Evidence tracking per case |
 | `reminders` | Scheduled reminders |
 | `case_procedure_progress` | Per-case step completion tracking |
 | `pdf_imports` | PDF import history (filename, lawId, count, timestamp) |
+| `hearings` | Hearing management (date, type, outcome, next hearing) |
+| `bails` | Bail petition management (type, status, order, surety, amount) |
+| `case_documents` | Case document/image storage (file path, type, size) |
+| `case_notes` | Case diary entries (content, timestamp) |
 
 ### Database Migrations
 - **v1→v2**: Added `law_sections.isCustom`, `cases.sectionId`, `case_procedure_progress` table
 - **v2→v3**: Added `pdf_imports` table
+- **v3→v4**: Added 9 case columns (`opponentAdvocate`, `advocateName`, `advocatePhone`, `policeStation`, `firNumber`, `firDate`, `filingNumber`, `caseYear`), 2 client columns (`fatherName`, `occupation`), and 4 new tables: `hearings`, `bails`, `case_documents`, `case_notes`
 - **Fallback**: `fallbackToDestructiveMigration()` during development (data is re-seedable)
 
 ## Folder Structure
@@ -97,7 +107,7 @@ app/src/main/java/com/rudra/legalassistantbd/
 ├── LegalAssistantApp.kt              # Hilt Application
 ├── MainActivity.kt                   # Single Activity + onboarding check
 ├── core/
-│   ├── database/                     # Room DB (v3), entities (11), DAOs (9)
+│   ├── database/                     # Room DB (v4), entities (15), DAOs (13)
 │   ├── di/                           # Hilt DI modules (App, Database, Worker)
 │   ├── security/                     # PIN + Biometric
 │   └── util/                         # Constants, Extensions
@@ -123,7 +133,7 @@ app/src/main/java/com/rudra/legalassistantbd/
 │   ├── dashboard/                    # Main dashboard
 │   ├── laws/                         # Law explorer, detail, section detail
 │   ├── search/                       # FTS5 search screen
-│   ├── cases/                        # Case list, detail, create
+│   ├── cases/                        # Case list (with status filter tabs), 5-tab detail (Overview/Hearings/Documents/Bail/Notes), create (with client selection + document upload)
 │   ├── procedures/                   # Legal procedure display
 │   ├── procedure/                    # ProcedureGenerator utility
 │   ├── ai/                           # AI chat assistant
@@ -172,7 +182,7 @@ A settings screen with its own `SettingsViewModel` (Hilt-injected). Features:
 | `section_detail/{sectionId}` | Section detail | sectionId: Int | hidden |
 | `search` | Full-text search | none | hidden |
 | `cases` | Case list | none | tab |
-| `case_detail/{caseId}` | Case detail with procedure guidance | caseId: Int | hidden |
+| `case_detail/{caseId}` | Case detail with 5 tabs (Overview, Hearings, Documents, Bail, Notes) + procedure guidance | caseId: Int | hidden |
 | `create_case` | Create new case | none | hidden |
 | `procedures/{sectionId}` | Legal procedure steps | sectionId: Int | hidden |
 | `ai_chat` | AI legal assistant | none | tab |
@@ -299,14 +309,21 @@ Maps Bengali terms to English keywords for cross-language search:
 
 ### FileProvider Configuration
 - Authority: `${applicationId}.fileprovider`
-- Path: `cache-path name="documents" path="documents/"` (in res/xml/file_paths.xml)
-- Used by ExportShareUtil for sharing exported section files
+- Paths: `cache-path name="documents"` + `cache-path name="evidence"` + `cache-path name="case_images"` + `external-cache-path name="external_documents"` (in res/xml/file_paths.xml)
+- Used by ExportShareUtil for sharing files, and by case document/image upload system for persisting attachments to app cache
 - Declared in AndroidManifest.xml
 
 ### Key Dependency Versions
 - Room 2.6.1 | Hilt 2.48 | Compose BOM 2026.02.01
 - PDFBox-Android 2.0.29 | Navigation Compose 2.7.5
 - WorkManager 2.9.0 | DataStore 1.1.3 | Biometric 1.1.0
+
+## Permissions
+- `POST_NOTIFICATIONS` — Reminder notifications
+- `USE_BIOMETRIC` — Biometric authentication
+- `READ_EXTERNAL_STORAGE` (maxSdk 32) / `READ_MEDIA_IMAGES` (Android 13+) — Case image/document upload
+- `CAMERA` (optional feature) — Direct photo capture for case evidence
+- `INTERNET` — Future online AI features
 
 ## Build Configuration
 - **minSdk**: 28 | **targetSdk**: 36 | **compileSdk**: 36
@@ -315,7 +332,7 @@ Maps Bengali terms to English keywords for cross-language search:
 
 ## Development Phases
 1. ✅ **PHASE 1**: Law DB + JSON import + FTS5 search + Law viewer
-2. ✅ **PHASE 2**: Case management + Timeline UI + Reminder system
+2. ✅ **PHASE 2**: Case management + Hearing management + Bail management + Document/image upload + Case diary + Timeline UI + Reminder system
 3. ✅ **PHASE 3**: Procedure engine + Offline AI + PDF pipeline (4-stage + auto-procedures + share/export)
 4. 🔲 **PHASE 4**: Online AI integration (OpenAI/Gemini API + streaming chat)
 5. 🔲 **PHASE 5**: OCR (ML Kit) + Voice search (Bengali voice queries)

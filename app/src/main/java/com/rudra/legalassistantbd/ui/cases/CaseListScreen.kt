@@ -19,11 +19,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.rudra.legalassistantbd.core.database.entity.CaseEntity
+import com.rudra.legalassistantbd.core.util.Constants
 import com.rudra.legalassistantbd.core.util.toFormattedDate
 import com.rudra.legalassistantbd.ui.components.*
 import com.rudra.legalassistantbd.ui.theme.*
 import com.rudra.legalassistantbd.ui.theme.LocalAppColors
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CaseListScreen(
     navController: NavController,
@@ -32,6 +34,13 @@ fun CaseListScreen(
     val cases by viewModel.cases.collectAsState()
     val scheme = MaterialTheme.colorScheme
     val c = LocalAppColors.current
+    var selectedFilter by remember { mutableStateOf("All") }
+    val filters = listOf("All") + Constants.CASE_STATUSES
+
+    val filteredCases = when (selectedFilter) {
+        "All" -> cases
+        else -> cases.filter { it.status == selectedFilter }
+    }
 
     Scaffold(
         topBar = {
@@ -56,7 +65,8 @@ fun CaseListScreen(
         },
         containerColor = scheme.background
     ) { padding ->
-        if (cases.isEmpty()) {
+        val isEmpty = filteredCases.isEmpty()
+        if (isEmpty && selectedFilter == "All") {
             EmptyState(
                 icon = Icons.Outlined.FolderOpen,
                 title = "No Cases Yet",
@@ -70,21 +80,49 @@ fun CaseListScreen(
                     actionText = "Create",
                     onClick = { navController.navigate("create_case") }
                 )
-                Spacer(Modifier.height(12.dp))
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    contentPadding = PaddingValues(vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Spacer(Modifier.height(8.dp))
+
+                ScrollableTabRow(
+                    selectedTabIndex = filters.indexOf(selectedFilter).coerceAtLeast(0),
+                    containerColor = scheme.background,
+                    contentColor = scheme.primary,
+                    edgePadding = 16.dp,
+                    divider = {}
                 ) {
-                    items(cases) { case ->
-                        CaseCard(
-                            case = case,
-                            onClick = {
-                                navController.navigate("case_detail/${case.id}")
+                    filters.forEach { filter ->
+                        Tab(
+                            selected = selectedFilter == filter,
+                            onClick = { selectedFilter = filter },
+                            text = {
+                                Text(
+                                    filter,
+                                    fontWeight = if (selectedFilter == filter) FontWeight.Bold else FontWeight.Normal
+                                )
                             }
                         )
+                    }
+                }
+
+                Spacer(Modifier.height(8.dp))
+
+                if (isEmpty) {
+                    EmptyState(
+                        icon = Icons.Outlined.SearchOff,
+                        title = "No $selectedFilter Cases",
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+                        contentPadding = PaddingValues(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(filteredCases) { case ->
+                            CaseCard(
+                                case = case,
+                                onClick = { navController.navigate("case_detail/${case.id}") }
+                            )
+                        }
                     }
                 }
             }
@@ -151,11 +189,20 @@ fun CaseCard(
                         fontWeight = FontWeight.Bold
                     )
                     Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = case.caseType,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = scheme.onSurfaceVariant
-                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = case.caseType,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = scheme.onSurfaceVariant
+                        )
+                        case.courtName?.let {
+                            Text(
+                                text = "• $it",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = scheme.onSurfaceVariant
+                            )
+                        }
+                    }
                     Spacer(Modifier.height(8.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),

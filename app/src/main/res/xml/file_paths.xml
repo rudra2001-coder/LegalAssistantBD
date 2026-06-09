@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <cache-path name="documents" path="documents/" />
+    <cache-path name="evidence" path="evidence/" />
+    <cache-path name="case_images" path="case_images/" />
+    <external-cache-path name="external_documents" path="." />
 </paths>

@@ -7,9 +7,11 @@ import androidx.room.PrimaryKey
 data class ClientEntity(
     @PrimaryKey val id: Int,
     val name: String,
+    val fatherName: String? = null,
     val phone: String? = null,
     val email: String? = null,
     val address: String? = null,
+    val occupation: String? = null,
     val notes: String? = null,
     val createdTimestamp: Long = System.currentTimeMillis()
 )
